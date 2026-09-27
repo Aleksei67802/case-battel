@@ -73,10 +73,11 @@ function renderCases(){
  $("caseGrid").innerHTML=CASES.map(c=>{
   const values=c.items.map(x=>x[2]),min=Math.min(...values),max=Math.max(...values);
   return `<article class="case">
+  <button class="insideBtn" type="button" onclick="showRetreat('${c.id}')">ЧТО ВНУТРИ</button>
   <span class="tag">${c.name}</span><div class="art">${c.art}</div>
   <h3>${c.name}<span class="price">◆ ${money(c.price)}</span></h3>
   <p>Дропы от ◆ ${money(min)} до ◆ ${money(max)}</p>
-  <div class="caseBtns"><button class="retreat" onclick="showRetreat('${c.id}')">SHOW RETREAT</button><button class="open" onclick="openCase('${c.id}')">${c.price===0?"БЕСПЛАТНО":"ОТКРЫТЬ"}</button></div>
+  <div class="caseBtns"><button class="open" onclick="openCase('${c.id}')">${c.price===0?"БЕСПЛАТНО":"ОТКРЫТЬ"}</button></div>
  </article>`
  }).join("");
 }
