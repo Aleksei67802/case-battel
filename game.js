@@ -87,16 +87,6 @@ function drop(c){
 }
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800)}
 function renderCases(){
- const pv=PROMO_CASE.items.map(x=>x[2]),pmin=Math.min(...pv),pmax=Math.max(...pv);
- const promoCard=`<article class="case promoCase">
-  <div class="promoRibbon">PROMO · CODE REQUIRED</div>
-  <button class="insideBtn" type="button" onclick="showRetreat('backtoschool2026')">ЧТО ВНУТРИ</button>
-  <span class="tag">BACK TO SCHOOL 2026</span>
-  <div class="promoChest"><span>🎒</span><i>✦</i></div>
-  <h3>BACK TO SCHOOL<span class="price">🔐 CODE</span></h3>
-  <p>10 предметов · от ◆ ${money(pmin)} до ◆ ${money(pmax)}</p>
-  <div class="caseBtns"><button class="open promoOpen" onclick="openCase('backtoschool2026')">ОТКРЫТЬ ПО ПРОМОКОДУ</button></div>
- </article>`;
  const regular=CASES.map(c=>{
   const values=c.items.map(x=>x[2]),min=Math.min(...values),max=Math.max(...values);
   return `<article class="case">
@@ -107,8 +97,9 @@ function renderCases(){
   <div class="caseBtns"><button class="open" onclick="openCase('${c.id}')">${c.price===0?"БЕСПЛАТНО":"ОТКРЫТЬ"}</button></div>
  </article>`
  }).join("");
- $("caseGrid").innerHTML=promoCard+regular;
+ $("caseGrid").innerHTML=regular;
 }
+
 function renderInv(){
  const a=filter==="all"?inv:inv.filter(x=>x.rarity===filter);
  $("count").textContent=inv.length;
