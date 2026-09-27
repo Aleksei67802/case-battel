@@ -1,12 +1,12 @@
 <!doctype html><html lang="ru"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CASE BATTLE</title><link rel="stylesheet" href="style.css?v=40"></head><body>
+<title>CASE BATTLE</title><link rel="stylesheet" href="style.css?v=50"></head><body>
 <div class="app">
-<header><div><div class="logo">CASE<span>BATTLE</span></div><small>ОТКРЫВАЙ • УЛУЧШАЙ • РИСКУЙ</small></div><div class="bal">◆ <b id="balance">5000</b></div></header>
+<header><div><div class="logo">CASE<span>BATTLE</span></div><small>ОТКРЫВАЙ • УЛУЧШАЙ • РИСКУЙ</small></div><div class="bal">◆ <b id="balance">100</b></div></header>
 <main>
 <section class="page active" id="cases"><div class="hero"><span>CASE DROP</span><h1>Открой свой дроп</h1><p>Можно получить предмет дешевле кейса или сорвать джекпот.</p></div><div class="title">КЕЙСЫ <em>4 штуки</em></div><div class="cases" id="caseGrid"></div></section>
 <section class="page" id="inventory"><div class="head"><div><h2>Инвентарь</h2><small><b id="count">0</b> предметов</small></div><button id="reset">Сбросить</button></div><div class="filters" id="filters"><button class="on" data-f="all">Все</button><button data-f="common">Обычные</button><button data-f="rare">Редкие</button><button data-f="epic">Эпик</button><button data-f="legendary">Легендарные</button></div><div class="inv" id="inv"></div></section>
-<section class="page" id="upgrade"><div class="head"><div><h2>Апгрейдер</h2><small>Цель всегда дороже твоего скина</small></div></div>
+<section class="page" id="upgrade"><div class="head"><div><h2>Апгрейдер</h2><small>Выбирай предмет из инвентаря и цель из каталога дорогих скинов</small></div></div>
 <div class="upbox"><div class="slot"><label>ТВОЙ СКИН</label><div id="fromCard" class="pick">Выбери предмет</div><select id="from"></select></div><div class="arr">→</div><div class="slot"><label>ЦЕЛЬ</label><div id="toCard" class="pick">Выбери скин дороже</div><select id="to"></select></div></div>
 <div class="chance"><span>ШАНС УСПЕХА</span><b id="chance">—</b><div><i id="chanceBar"></i></div></div>
 <button class="upgradeBtn" id="upgradeBtn" disabled>УЛУЧШИТЬ</button>
@@ -15,4 +15,4 @@
 <nav><button class="active" data-page="cases">▣<span>Кейсы</span></button><button data-page="inventory">▤<span>Инвентарь</span></button><button data-page="upgrade">↗<span>Апгрейд</span></button></nav>
 <div class="modal hidden" id="modal"><div class="modalbox"><div class="spinner" id="spin"></div><h2 id="modalTitle">КРУТИМ...</h2><p id="modalText"></p><button id="modalBtn" class="upgradeBtn hidden">ЗАКРЫТЬ</button></div></div>
 <div class="toast" id="toast"></div>
-</div><script src="game.js?v=40"></script></body></html>
+</div><script src="game.js?v=50"></script></body></html>
