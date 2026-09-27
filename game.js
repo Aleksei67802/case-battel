@@ -1,3 +1,20 @@
+const PROMO_CODE="BACKTOSCHOOL2026";
+const PROMO_CASE={
+ id:"backtoschool2026",name:"BACK TO SCHOOL",price:0,art:"🎒",
+ items:[
+  ["School Blaster","common",250,"🔫",35],
+  ["Classroom Pistol","common",400,"🔫",25],
+  ["Notebook SMG","rare",650,"📓",15],
+  ["Hallway Hunter","rare",900,"🎯",10],
+  ["Red Marker Rifle","epic",1300,"🖊️",6],
+  ["Golden Pencil Gun","epic",1800,"✏️",4],
+  ["Principal's Deagle","legendary",2600,"🔫",2],
+  ["Backpack Karambit","legendary",4000,"🔪",1.5],
+  ["Homework Destroyer","mythic",7000,"💥",1.49],
+  ["Golden Graduation Blade","mythic",25000,"🏆",0.01]
+ ]
+};
+
 const CASES=[
  {id:"free",name:"FREE",price:0,art:"🎁",items:[
   ["Sticker Box","common",10,"🎁",35],["Glock Mini","common",10,"🔫",30],["P250 Mini","common",10,"🔫",20],
@@ -70,7 +87,17 @@ function drop(c){
 }
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800)}
 function renderCases(){
- $("caseGrid").innerHTML=CASES.map(c=>{
+ const pv=PROMO_CASE.items.map(x=>x[2]),pmin=Math.min(...pv),pmax=Math.max(...pv);
+ const promoCard=`<article class="case promoCase">
+  <div class="promoRibbon">PROMO · CODE REQUIRED</div>
+  <button class="insideBtn" type="button" onclick="showRetreat('backtoschool2026')">ЧТО ВНУТРИ</button>
+  <span class="tag">BACK TO SCHOOL 2026</span>
+  <div class="promoChest"><span>🎒</span><i>✦</i></div>
+  <h3>BACK TO SCHOOL<span class="price">🔐 CODE</span></h3>
+  <p>10 предметов · от ◆ ${money(pmin)} до ◆ ${money(pmax)}</p>
+  <div class="caseBtns"><button class="open promoOpen" onclick="openCase('backtoschool2026')">ОТКРЫТЬ ПО ПРОМОКОДУ</button></div>
+ </article>`;
+ const regular=CASES.map(c=>{
   const values=c.items.map(x=>x[2]),min=Math.min(...values),max=Math.max(...values);
   return `<article class="case">
   <button class="insideBtn" type="button" onclick="showRetreat('${c.id}')">ЧТО ВНУТРИ</button>
@@ -80,6 +107,7 @@ function renderCases(){
   <div class="caseBtns"><button class="open" onclick="openCase('${c.id}')">${c.price===0?"БЕСПЛАТНО":"ОТКРЫТЬ"}</button></div>
  </article>`
  }).join("");
+ $("caseGrid").innerHTML=promoCard+regular;
 }
 function renderInv(){
  const a=filter==="all"?inv:inv.filter(x=>x.rarity===filter);
@@ -92,7 +120,7 @@ function renderInv(){
 }
 
 function showRetreat(id){
- const c=CASES.find(x=>x.id===id);if(!c)return;
+ const c=id==="backtoschool2026"?PROMO_CASE:CASES.find(x=>x.id===id);if(!c)return;
  const total=c.items.reduce((s,x)=>s+x[4],0);
  const rows=c.items.map(x=>{
   const chance=x[4]/total*100;
@@ -105,6 +133,7 @@ function showRetreat(id){
 
 function openCase(id){
  if(busy)return;
+ if(id==="backtoschool2026"){openPromoModal();return}
  const c=CASES.find(x=>x.id===id);if(!c)return;
  if(balance<c.price){toast("Нужно ещё ◆ "+money(c.price-balance));return}
  balance-=c.price;
@@ -118,6 +147,33 @@ function openCase(id){
   $("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
  },2300);
 }
+function openPromoModal(){
+ const input=$("promoInput"); input.value=""; input.placeholder="Введи промокод"; input.classList.remove("promoError");
+ $("promoModal").classList.remove("hidden"); setTimeout(()=>input.focus(),50);
+}
+function closePromoModal(){$("promoModal").classList.add("hidden")}
+function submitPromo(){
+ if(busy)return;
+ const input=$("promoInput"),code=input.value.trim().toUpperCase();
+ if(code!==PROMO_CODE){
+  input.value="";input.placeholder="НЕВЕРНЫЙ ПРОМОКОД";input.classList.add("promoError");
+  toast("Неверный промокод");
+  setTimeout(()=>{input.placeholder="Введи промокод";input.classList.remove("promoError")},1400);
+  return;
+ }
+ closePromoModal();
+ const won=drop(PROMO_CASE);busy=true;
+ $("modal").classList.remove("hidden");$("modalTitle").textContent="BACK TO SCHOOL";
+ $("modalText").textContent="Промокод принят! Открываем ящик...";
+ $("modalBtn").classList.add("hidden");
+ setTimeout(()=>{
+  inv.push(won);busy=false;save();renderInv();
+  $("modalTitle").textContent="🎒 ТВОЙ ПРЕДМЕТ!";
+  $("modalText").innerHTML=`${won.emoji} <b>${won.name}</b><br>Стоимость: ◆ ${money(won.value)}`;
+  $("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
+ },2300);
+}
+
 function sell(id){
  const i=inv.findIndex(x=>String(x.id)===String(id));if(i<0)return;
  const x=inv[i];inv.splice(i,1);balance+=Number(x.value)||0;save();renderInv();
@@ -177,6 +233,11 @@ $("to").onchange=()=>{toKey=$("to").value;updateUpgrade()};
 $("upgradeBtn").onclick=upgrade;
 $("modalBtn").onclick=()=>{if(!busy)$("modal").classList.add("hidden")};
 $("retreatClose").onclick=()=>$("retreatModal").classList.add("hidden");
+$("promoSubmit").onclick=submitPromo;
+$("promoClose").onclick=closePromoModal;
+$("promoInput").addEventListener("keydown",e=>{if(e.key==="Enter")submitPromo()});
+$("promoModal").onclick=e=>{if(e.target.id==="promoModal")closePromoModal()};
+
 $("retreatModal").onclick=e=>{if(e.target.id==="retreatModal")$("retreatModal").classList.add("hidden")};
 $("filters").onclick=e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;document.querySelectorAll(".filters button").forEach(x=>x.classList.remove("on"));b.classList.add("on");renderInv()};
 $("reset").onclick=()=>{if(confirm("Сбросить баланс и инвентарь?")){balance=100;inv=[];fromId="";toKey="";save();renderInv();fillSelects();updateUpgrade()}};
