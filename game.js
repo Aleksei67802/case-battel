@@ -87,6 +87,15 @@ function drop(c){
 }
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800)}
 function renderCases(){
+ const promoUsed=localStorage.getItem("backToSchool2026Used")==="1";
+ const promoCard=`<article class="case">
+  <button class="insideBtn" type="button" onclick="showRetreat('promo')">ЧТО ВНУТРИ</button>
+  <span class="tag">BACK TO SCHOOL</span>
+  <div class="art">🎒</div>
+  <h3>BACK TO SCHOOL<span class="price">${promoUsed?"✓ ОТКРЫТ":"🔐 PROMO"}</span></h3>
+  <p>${promoUsed?"Этот промо-кейс уже открыт":"10 предметов · нужен промокод"}</p>
+  <div class="caseBtns"><button class="open" ${promoUsed?"disabled":""} onclick="openCase('promo')">${promoUsed?"УЖЕ ОТКРЫТ":"ОТКРЫТЬ"}</button></div>
+ </article>`;
  const regular=CASES.map(c=>{
   const values=c.items.map(x=>x[2]),min=Math.min(...values),max=Math.max(...values);
   return `<article class="case">
@@ -95,9 +104,9 @@ function renderCases(){
   <h3>${c.name}<span class="price">◆ ${money(c.price)}</span></h3>
   <p>Дропы от ◆ ${money(min)} до ◆ ${money(max)}</p>
   <div class="caseBtns"><button class="open" onclick="openCase('${c.id}')">${c.price===0?"БЕСПЛАТНО":"ОТКРЫТЬ"}</button></div>
- </article>`
+ </article>`;
  }).join("");
- $("caseGrid").innerHTML=regular;
+ $("caseGrid").innerHTML=promoCard+regular;
 }
 
 function renderInv(){
@@ -124,6 +133,9 @@ function showRetreat(id){
 
 function openCase(id){
  if(busy)return;
+ if(id==="promo" && localStorage.getItem("backToSchool2026Used")==="1"){
+  toast("Этот промо-кейс уже был открыт"); return;
+ }
  if(id==="backtoschool2026"){openPromoModal();return}
  const c=CASES.find(x=>x.id===id);if(!c)return;
  if(balance<c.price){toast("Нужно ещё ◆ "+money(c.price-balance));return}
@@ -139,8 +151,15 @@ function openCase(id){
  },2300);
 }
 function openPromoModal(){
- const input=$("promoInput"); input.value=""; input.placeholder="Введи промокод"; input.classList.remove("promoError");
- $("promoModal").classList.remove("hidden"); setTimeout(()=>input.focus(),50);
+ if(localStorage.getItem("backToSchool2026Used")==="1"){
+  toast("Этот промо-кейс уже был открыт");
+  return;
+ }
+ const input=$("promoInput"); if(!input)return;
+ input.value=""; input.placeholder="Введи промокод";
+ input.classList.remove("promoError");
+ $("promoModal").classList.remove("hidden");
+ setTimeout(()=>input.focus(),50);
 }
 function closePromoModal(){$("promoModal").classList.add("hidden")}
 function submitPromo(){
@@ -153,6 +172,7 @@ function submitPromo(){
   return;
  }
  closePromoModal();
+ localStorage.setItem("backToSchool2026Used","1");
  const won=drop(PROMO_CASE);busy=true;
  $("modal").classList.remove("hidden");$("modalTitle").textContent="BACK TO SCHOOL";
  $("modalText").textContent="Промокод принят! Открываем ящик...";
