@@ -1,4 +1,8 @@
 const CASES=[
+ {id:"free",name:"FREE",price:0,art:"🎁",items:[
+  ["Sticker Box","common",10,"🎁",35],["Glock Mini","common",10,"🔫",30],["P250 Mini","common",10,"🔫",20],
+  ["Knife Token","common",10,"🔪",10],["AWP Toy","common",10,"🎯",5]
+ ]},
  {id:"c1",name:"STARTER",price:100,art:"🔪",items:[
   ["Rust Knife","common",100,"🔪",52],["Glock Lime","common",150,"🔫",25],["USP Carbon","rare",250,"🔫",14],["Shadow Knife","epic",500,"🗡️",7],["Butterfly Gold","legendary",1000,"🦋",2]
  ]},
@@ -48,8 +52,8 @@ function renderCases(){
  <article class="case">
   <span class="tag">${c.name}</span><div class="art">${c.art}</div>
   <h3>${c.name}<span class="price">◆ ${c.price}</span></h3>
-  <p>Дропы от ◆ 100 до ◆ 1 000</p>
-  <button class="open" onclick="openCase('${c.id}')">ОТКРЫТЬ</button>
+  <p>Дропы от ◆ 10 до ◆ 1 000</p>
+  <button class="open" onclick="openCase('${c.id}')">${c.price===0?"БЕСПЛАТНО":"ОТКРЫТЬ"}</button>
  </article>`).join("");
 }
 function renderInv(){
