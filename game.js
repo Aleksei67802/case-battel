@@ -3,28 +3,50 @@ const CASES=[
   ["Sticker Box","common",10,"🎁",35],["Glock Mini","common",10,"🔫",30],["P250 Mini","common",10,"🔫",20],
   ["Knife Token","common",10,"🔪",10],["AWP Toy","common",10,"🎯",5]
  ]},
- {id:"c1",name:"STARTER",price:100,art:"🔪",items:[
-  ["Rust Knife","common",100,"🔪",52],["Glock Lime","common",150,"🔫",25],["USP Carbon","rare",250,"🔫",14],["Shadow Knife","epic",500,"🗡️",7],["Butterfly Gold","legendary",1000,"🦋",2]
+
+ // Редчайший предмет в каждом кейсе имеет ровно заданный шанс.
+ {id:"c1",name:"BASIC",price:100,art:"🔪",items:[
+  ["Rust Knife","common",100,"🔪",48],["Glock Lime","common",150,"🔫",24],["USP Carbon","rare",250,"🔫",14],["Shadow Knife","epic",500,"🗡️",9],["Butterfly Gold","legendary",1000,"🦋",5]
  ]},
- {id:"c2",name:"NEON",price:200,art:"🔫",items:[
-  ["P250 Pulse","common",100,"🔫",45],["MP7 Neon","common",200,"🔫",28],["M4A1 Wave","rare",350,"🔫",16],["Karambit Blue","epic",700,"🔪",8],["Butterfly Cyber","legendary",1000,"🦋",3]
+ {id:"c2",name:"RARE",price:200,art:"🔫",items:[
+  ["P250 Pulse","common",100,"🔫",50],["MP7 Neon","common",200,"🔫",26],["M4A1 Wave","rare",350,"🔫",14],["Karambit Blue","epic",700,"🔪",6],["Butterfly Cyber","legendary",1000,"🦋",4]
  ]},
- {id:"c3",name:"GOLD",price:400,art:"👑",items:[
-  ["Five-SeveN Gold","common",100,"🔫",38],["AK Gold Line","common",250,"🔫",27],["M4 Gold","rare",450,"🔫",19],["Deagle Royal","epic",750,"🔫",12],["Karambit Gold","legendary",1000,"🔪",4]
+ {id:"c3",name:"EPIC",price:400,art:"👑",items:[
+  ["Five-SeveN Gold","common",100,"🔫",45],["AK Gold Line","common",250,"🔫",25],["M4 Gold","rare",450,"🔫",17],["Deagle Royal","epic",750,"🔫",10],["Karambit Gold","legendary",1000,"🔪",3]
  ]},
- {id:"c4",name:"DRAGON",price:500,art:"🐉",items:[
-  ["Tec-9 Flame","common",100,"🔫",35],["AWP Dragon","rare",300,"🎯",28],["AK Inferno","rare",500,"🔫",20],["Talon Crimson","epic",800,"🔪",13],["Dragon Karambit","legendary",1000,"🐉",4]
+ {id:"c4",name:"LEGENDARY",price:500,art:"💎",items:[
+  ["Tec-9 Flame","common",100,"🔫",45],["AWP Dragon","rare",300,"🎯",28],["AK Inferno","rare",500,"🔫",17],["Talon Crimson","epic",800,"🔪",8],["Dragon Karambit","legendary",1000,"🐉",2]
+ ]},
+
+ {id:"c5",name:"PREMIUM",price:1000,art:"💠",items:[
+  ["FAMAS Ice","common",500,"🔫",28],["Galil Frost","common",700,"🔫",22],["M4A1 Arctic","rare",1000,"🔫",18],
+  ["AWP Glacier","rare",1500,"🎯",12],["AK Aurora","epic",2000,"🔫",8],["Talon Ice","epic",2500,"🔪",5],
+  ["Butterfly Pearl","legendary",3000,"🦋",3],["Karambit Diamond","legendary",3500,"💎",2],["Dragon AWP","legendary",4000,"🐉",1],["Phoenix Knife","mythic",5000,"🔥",1]
+ ]},
+ {id:"c6",name:"ULTRA",price:2000,art:"⚡",items:[
+  ["USP Plasma","common",1000,"🔫",24],["M4A4 Volt","common",1300,"🔫",20],["AK Neon Storm","rare",1800,"🔫",16],
+  ["AWP Thunder","rare",2500,"🎯",12],["Butterfly Volt","epic",3500,"🦋",8],["Karambit Pulse","epic",4500,"🔪",6],
+  ["Talon Lightning","legendary",5500,"⚡",5],["M4A1 Hyper","legendary",6500,"🔫",4],["Dragon Blade","mythic",8000,"🐉",4.1],["Galaxy Karambit","mythic",10000,"🌌",0.9]
+ ]},
+ {id:"c7",name:"MYTHIC",price:3000,art:"🌌",items:[
+  ["AK Nebula","common",1500,"🔫",22],["M4 Cosmic","common",2200,"🔫",18],["AWP Eclipse","rare",3000,"🎯",15],
+  ["Deagle Galaxy","rare",4000,"🔫",12],["Butterfly Void","epic",6000,"🦋",9],["Karambit Nova","epic",8000,"🔪",7],
+  ["Talon Meteor","legendary",10000,"☄️",6],["Dragon AK","legendary",12000,"🐉",5],["Phoenix Blade","mythic",15000,"🔥",5.2],["Cosmic Dragon","mythic",20000,"🐲",0.8]
+ ]},
+ {id:"c8",name:"LEGEND",price:100000,art:"👑",items:[
+  ["M4A4 Royal","rare",20000,"🔫",20],["AK Emperor","rare",30000,"🔫",17],["AWP Monarch","epic",40000,"🎯",14],
+  ["Butterfly Crown","epic",55000,"🦋",12],["Karambit Royal","legendary",70000,"🔪",10],["Dragon AWP Gold","legendary",85000,"🐉",9],
+  ["Phoenix Crown","mythic",100000,"🔥",7],["Talon Imperial","mythic",120000,"⚔️",5.5],["Galaxy Dragon","legendary",140000,"🐲",5],["Emperor Dragon Knife","legendary",150000,"👑",0.5]
+ ]},
+ {id:"c9",name:"DRAGON K",price:200000,art:"🐉",items:[
+  ["AK Dragonfire","rare",50000,"🔫",20],["AWP Red Dragon","epic",70000,"🎯",17],["M4 Infernal","epic",90000,"🔫",14],
+  ["Butterfly Inferno","legendary",110000,"🦋",12],["Karambit Hellfire","legendary",130000,"🔪",10],["Talon Dragon","mythic",145000,"🐉",9],
+  ["Phoenix Dragon","mythic",160000,"🔥",7],["Dragon Crown","legendary",175000,"👑",5.5],["Ancient Dragon","mythic",190000,"🐲",5.4],["Dragon King","mythic",200000,"🐉",0.1]
  ]}
 ];
 
-// Полный каталог целей апгрейдера. Все цели дороже выбранного предмета.
-const SKINS=[
- ["Rust Knife","common",100,"🔪"],["Glock Lime","common",150,"🔫"],["MP7 Neon","common",200,"🔫"],
- ["USP Carbon","rare",250,"🔫"],["AWP Dragon","rare",300,"🎯"],["M4A1 Wave","rare",350,"🔫"],
- ["AK Gold Line","common",400,"🔫"],["AK Inferno","rare",500,"🔫"],["Shadow Knife","epic",500,"🗡️"],
- ["Karambit Blue","epic",700,"🔪"],["Deagle Royal","epic",750,"🔫"],["Talon Crimson","epic",800,"🔪"],
- ["Butterfly Gold","legendary",1000,"🦋"],["Butterfly Cyber","legendary",1000,"🦋"],["Dragon Karambit","legendary",1000,"🐉"]
-];
+// Все предметы из кейсов доступны как цели апгрейдера.
+const SKINS=[...new Map(CASES.flatMap(c=>c.items.map(x=>[x[0]+"|"+x[2],x])).map(([k,x])=>[k,x])).values()];
 
 let balance=Number(localStorage.cb_balance_v5 ?? 100);
 let inv=[];
@@ -48,13 +70,15 @@ function drop(c){
 }
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),1800)}
 function renderCases(){
- $("caseGrid").innerHTML=CASES.map(c=>`
- <article class="case">
+ $("caseGrid").innerHTML=CASES.map(c=>{
+  const values=c.items.map(x=>x[2]),min=Math.min(...values),max=Math.max(...values);
+  return `<article class="case">
   <span class="tag">${c.name}</span><div class="art">${c.art}</div>
-  <h3>${c.name}<span class="price">◆ ${c.price}</span></h3>
-  <p>Дропы от ◆ 10 до ◆ 1 000</p>
+  <h3>${c.name}<span class="price">◆ ${money(c.price)}</span></h3>
+  <p>Дропы от ◆ ${money(min)} до ◆ ${money(max)}</p>
   <button class="open" onclick="openCase('${c.id}')">${c.price===0?"БЕСПЛАТНО":"ОТКРЫТЬ"}</button>
- </article>`).join("");
+ </article>`
+ }).join("");
 }
 function renderInv(){
  const a=filter==="all"?inv:inv.filter(x=>x.rarity===filter);
@@ -102,7 +126,7 @@ function fillSelects(){
 }
 function findSkin(key){return SKINS.find(x=>skinKey(x)===key)}
 function card(el,x,empty){
- el.innerHTML=x?`<div><div class="big">${x.emoji}</div><b>${x.name}</b><small>◆ ${money(x.value)}</small></div>`:empty;
+ el.innerHTML=x?`<div><div class="big">${x[3]||x.emoji}</div><b>${x[0]||x.name}</b><small>◆ ${money(x[2]||x.value)}</small></div>`:empty;
 }
 function updateUpgrade(){
  const f=inv.find(x=>String(x.id)===String($("from").value));
