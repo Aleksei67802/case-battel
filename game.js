@@ -136,7 +136,7 @@ function openCase(id){
  if(id==="promo" && localStorage.getItem("backToSchool2026Used")==="1"){
   toast("Этот промо-кейс уже был открыт"); return;
  }
- if(id==="backtoschool2026"){openPromoModal();return}
+ if(id==="promo"){openPromoModal();return}
  const c=CASES.find(x=>x.id===id);if(!c)return;
  if(balance<c.price){toast("Нужно ещё ◆ "+money(c.price-balance));return}
  balance-=c.price;
@@ -173,6 +173,7 @@ function submitPromo(){
  }
  closePromoModal();
  localStorage.setItem("backToSchool2026Used","1");
+ renderCases();
  const won=drop(PROMO_CASE);busy=true;
  $("modal").classList.remove("hidden");$("modalTitle").textContent="BACK TO SCHOOL";
  $("modalText").textContent="Промокод принят! Открываем ящик...";
