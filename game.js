@@ -76,7 +76,7 @@ function renderCases(){
   <span class="tag">${c.name}</span><div class="art">${c.art}</div>
   <h3>${c.name}<span class="price">◆ ${money(c.price)}</span></h3>
   <p>Дропы от ◆ ${money(min)} до ◆ ${money(max)}</p>
-  <button class="open" onclick="openCase('${c.id}')">${c.price===0?"БЕСПЛАТНО":"ОТКРЫТЬ"}</button>
+  <div class="caseBtns"><button class="retreat" onclick="showRetreat('${c.id}')">SHOW RETREAT</button><button class="open" onclick="openCase('${c.id}')">${c.price===0?"БЕСПЛАТНО":"ОТКРЫТЬ"}</button></div>
  </article>`
  }).join("");
 }
@@ -89,6 +89,19 @@ function renderInv(){
  <h4>${x.name}</h4><div class="value">◆ ${money(x.value)}</div>
  <button class="sell" onclick="sell('${x.id}')">ПРОДАТЬ · ◆ ${money(x.value)}</button></article>`).join("");
 }
+
+function showRetreat(id){
+ const c=CASES.find(x=>x.id===id);if(!c)return;
+ const total=c.items.reduce((s,x)=>s+x[4],0);
+ const rows=c.items.map(x=>{
+  const chance=x[4]/total*100;
+  return `<div class="dropRow"><div class="dropIcon">${x[3]}</div><div class="dropInfo"><b>${x[0]}</b><span>${x[1]} · ◆ ${money(x[2])}</span></div><strong>${chance<1?chance.toFixed(2):chance.toFixed(chance%1?2:0)}%</strong></div>`;
+ }).join('');
+ $("retreatTitle").textContent=`${c.name} · SHOW RETREAT`;
+ $("retreatText").innerHTML=`<div class="dropList">${rows}</div>`;
+ $("retreatModal").classList.remove("hidden");
+}
+
 function openCase(id){
  if(busy)return;
  const c=CASES.find(x=>x.id===id);if(!c)return;
@@ -162,6 +175,8 @@ $("from").onchange=()=>{fromId=$("from").value;toKey="";fillSelects();updateUpgr
 $("to").onchange=()=>{toKey=$("to").value;updateUpgrade()};
 $("upgradeBtn").onclick=upgrade;
 $("modalBtn").onclick=()=>{if(!busy)$("modal").classList.add("hidden")};
+$("retreatClose").onclick=()=>$("retreatModal").classList.add("hidden");
+$("retreatModal").onclick=e=>{if(e.target.id==="retreatModal")$("retreatModal").classList.add("hidden")};
 $("filters").onclick=e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.f;document.querySelectorAll(".filters button").forEach(x=>x.classList.remove("on"));b.classList.add("on");renderInv()};
 $("reset").onclick=()=>{if(confirm("Сбросить баланс и инвентарь?")){balance=100;inv=[];fromId="";toKey="";save();renderInv();fillSelects();updateUpgrade()}};
 document.querySelector("nav").onclick=e=>{
