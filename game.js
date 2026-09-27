@@ -120,15 +120,14 @@ function renderInv(){
 }
 
 function showRetreat(id){
- const c=id==="backtoschool2026"?PROMO_CASE:CASES.find(x=>x.id===id);if(!c)return;
- const total=c.items.reduce((s,x)=>s+x[4],0);
- const rows=c.items.map(x=>{
-  const chance=x[4]/total*100;
-  return `<div class="dropRow"><div class="dropIcon">${x[3]}</div><div class="dropInfo"><b>${x[0]}</b><span>${x[1]} · ◆ ${money(x[2])}</span></div><strong>${chance<1?chance.toFixed(2):chance.toFixed(chance%1?2:0)}%</strong></div>`;
- }).join('');
- $("retreatTitle").textContent=`${c.name} · SHOW RETREAT`;
- $("retreatText").innerHTML=`<div class="dropList">${rows}</div>`;
- $("retreatModal").classList.remove("hidden");
+ const c=id==="promo"?PROMO_CASE:CASES.find(x=>x.id===id);
+ if(!c)return;
+ const items=c.items||[];
+ $("modal").classList.remove("hidden");
+ $("modalTitle").textContent=id==="promo"?"ЧТО ВНУТРИ — BACK TO SCHOOL":"ЧТО ВНУТРИ";
+ $("modalText").innerHTML=items.map(x=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #ffffff10"><span style="font-size:25px">${x[3]}</span><span style="flex:1;text-align:left;font-weight:800">${x[0]}</span><span style="font-size:11px;opacity:.7">${x[4]}%</span></div>`).join("");
+ $("modalBtn").textContent="ЗАКРЫТЬ";
+ $("modalBtn").classList.remove("hidden");
 }
 
 function openCase(id){
