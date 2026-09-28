@@ -110,3 +110,63 @@
 .upgrade-circle .arrow {
   transform-origin: 50% 100%;
 }
+
+/* V6.2: clean rectangular opening/upgrade stage */
+.modalbox{
+  width:min(780px,calc(100vw - 28px));
+  max-height:88vh;
+  overflow:auto;
+  box-sizing:border-box;
+  border-radius:20px;
+  padding:24px;
+}
+.modalbox #spin{width:100%}
+.modalbox h2{font-size:20px;margin:18px 0 8px}
+.modalbox p{font-size:13px;line-height:1.45}
+.spinner{display:none !important}
+
+/* Case opening: only the horizontal item track moves. */
+.caseRoulette{
+  width:100%;
+  height:190px;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  padding:18px 0 22px;
+  border-radius:16px;
+  background:linear-gradient(180deg,#0d0f1d,#090a13);
+}
+.rouletteTrack{flex:none;transform:translateX(0)}
+.rouletteCard{height:142px}
+
+/* Upgrade: the wheel itself is a static picture; only the needle rotates. */
+.upgradeWheel{
+  width:min(330px,68vw);
+  aspect-ratio:1;
+  transform:none !important;
+  animation:none !important;
+  box-shadow:0 0 0 6px #171925,0 0 35px #35e28a33;
+}
+.upgradeWheel.wheelSpin{
+  transform:none !important;
+  animation:none !important;
+}
+.wheelNeedle{
+  transform:translateX(-50%) rotate(0deg);
+}
+.wheelNeedle.wheelSpin{
+  animation:needleSpin 3.6s cubic-bezier(.08,.72,.12,1) forwards !important;
+}
+@keyframes needleSpin{
+  from{transform:translateX(-50%) rotate(0deg)}
+  to{transform:translateX(-50%) rotate(var(--needle-landing))}
+}
+.wheelStatus{margin-top:2px}
+@media(max-width:520px){
+  .modal{padding:10px}
+  .modalbox{width:calc(100vw - 20px);padding:16px}
+  .caseRoulette{height:164px}
+  .rouletteCard{width:112px;min-width:112px;height:122px}
+  .upgradeWheel{width:min(285px,78vw)}
+}

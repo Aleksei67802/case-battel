@@ -297,18 +297,20 @@ function playUpgradeWheel(ch, ok, done){
  const spin=$("spin");
  const degPer=3.6;
  const greenEnd=ch*degPer;
- // If success, land inside green; otherwise land inside grey.
- const landing = ok ? (Math.random()*Math.max(2,greenEnd-4)+2) : (greenEnd+8 + Math.random()*Math.max(5,360-greenEnd-10));
+ // The result is decided before animation. The needle only visualizes it.
+ const landing = ok
+   ? (Math.random()*Math.max(2,greenEnd-4)+2)
+   : (greenEnd+8 + Math.random()*Math.max(5,360-greenEnd-10));
  const turns=5+Math.floor(Math.random()*3);
  spin.innerHTML=`<div class="upgradeWheelWrap">
-   <div class="upgradeWheel" style="--chance:${ch}%;--landing:${turns*360+landing}deg">
-     <div class="wheelGreen"></div><div class="wheelGray"></div><div class="wheelCenter"><b>${formatChance(ch)}</b><small>ШАНС</small></div>
-     <div class="wheelNeedle"></div>
+   <div class="upgradeWheel" style="--chance:${ch}%">
+     <div class="wheelCenter"><b>${formatChance(ch)}</b><small>ШАНС</small></div>
+     <div class="wheelNeedle" style="--needle-landing:${turns*360+landing}deg"></div>
    </div>
-   <div class="wheelStatus">ПРОВЕРЯЕМ ШАНС...</div>
+   <div class="wheelStatus">СТРЕЛКА КРУТИТСЯ...</div>
  </div>`;
- const wheel=spin.querySelector(".upgradeWheel");
- requestAnimationFrame(()=>wheel.classList.add("wheelSpin"));
+ const needle=spin.querySelector(".wheelNeedle");
+ requestAnimationFrame(()=>needle.classList.add("wheelSpin"));
  setTimeout(()=>{
    spin.querySelector(".wheelStatus").textContent=ok?"ПОПАЛИ В ЗЕЛЁНУЮ ЗОНУ":"СТОП. СЕРАЯ ЗОНА";
  },2800);
