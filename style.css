@@ -53,3 +53,60 @@
 @keyframes caseSettle{0%{transform:translateX(var(--roulette-x))}100%{transform:translateX(var(--roulette-x))}}
 @keyframes wheelSpin{0%{transform:rotate(0deg)}100%{transform:rotate(0deg))}}
 @media(max-width:480px){.rouletteCard{width:116px;min-width:116px;height:116px}.caseRoulette{margin:0 -4px;width:calc(100% + 8px)}.upgradeWheel{width:250px}}
+
+/* V6 layer fix: parent must never rotate */
+.upgrade-wheel { transform: none !important; animation: none !important; }
+
+/* V6 layer fix: parent must never rotate */
+.upgrade-circle { transform: none !important; animation: none !important; }
+
+/* V6 layer fix: parent must never rotate */
+.upgrade-card { transform: none !important; animation: none !important; }
+
+/* V6 layer fix: parent must never rotate */
+.upgrade-panel { transform: none !important; animation: none !important; }
+
+/* V6 layer fix: parent must never rotate */
+.roulette { transform: none !important; animation: none !important; }
+
+/* V6 layer fix: parent must never rotate */
+.roulette-window { transform: none !important; animation: none !important; }
+
+/* V6 layer fix: parent must never rotate */
+.roulette-wrap { transform: none !important; animation: none !important; }
+
+/* V6 layer fix: parent must never rotate */
+.roulette-container { transform: none !important; animation: none !important; }
+
+/* V6 layer fix: parent must never rotate */
+.case-open { transform: none !important; animation: none !important; }
+
+/* V6 layer fix: parent must never rotate */
+.opening-modal { transform: none !important; animation: none !important; }
+
+/* V6 layer fix: parent must never rotate */
+.modal-content { transform: none !important; animation: none !important; }
+
+/* V6: only the horizontal track moves; its children stay upright */
+.roulette-track, .roulette-track * {
+  transform-style: flat !important;
+  backface-visibility: visible !important;
+}
+.roulette-item, .roulette-card, .roulette-track .item {
+  rotate: none !important;
+  transform: translateY(0) !important;
+}
+
+/* V6: upgrade wheel stays fixed; only the pointer may rotate */
+.upgrade-wheel, .upgrade-circle, .upgrade-panel {
+  rotate: none !important;
+  transform: none !important;
+  animation: none !important;
+}
+.upgrade-wheel .pointer,
+.upgrade-wheel .arrow,
+.upgrade-wheel .upgrade-pointer,
+.upgrade-circle .pointer,
+.upgrade-circle .arrow {
+  transform-origin: 50% 100%;
+}
