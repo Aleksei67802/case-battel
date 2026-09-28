@@ -108,3 +108,21 @@
  .upgradeHole{inset:62px}
  .upgradePointer{height:143px}
 }
+
+/* Upgrade green success zone */
+.upgradeRing{
+  background: conic-gradient(
+    #35df8a 0deg,
+    #35df8a var(--successDeg, 108deg),
+    #555967 var(--successDeg, 108deg),
+    #555967 360deg
+  ) !important;
+}
+.upgradeRing:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  pointer-events:none;
+  box-shadow:inset 0 0 18px rgba(53,223,138,.18), 0 0 22px rgba(53,223,138,.12);
+}
