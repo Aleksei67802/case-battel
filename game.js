@@ -142,25 +142,46 @@ function showRetreat(id){
  $("modalBtn").classList.remove("hidden");
 }
 
+function rarityLabel(r){
+ return ({common:"ОБЫЧНЫЙ",rare:"РЕДКИЙ",epic:"ЭПИК",legendary:"ЛЕГЕНДАРНЫЙ",mythic:"МИФИЧЕСКИЙ"})[r]||r.toUpperCase();
+}
+function rouletteCard(x){
+ return `<div class="rouletteCard rarity-${x[1]}"><div class="rIcon">${x[3]}</div><b>${x[0]}</b><small>${rarityLabel(x[1])} · ◆ ${money(x[2])}</small></div>`;
+}
+function playCaseAnimation(c, won, done){
+ const spin=$("spin");
+ const pool=[];
+ for(let i=0;i<28;i++) pool.push(c.items[Math.floor(Math.random()*c.items.length)]);
+ // Put the already-decided winner at the exact landing position.
+ pool[22]=[won.name,won.rarity,won.value,won.emoji,100];
+ spin.innerHTML=`<div class="caseRoulette"><div class="roulettePointer"></div><div class="rouletteTrack">${pool.map(rouletteCard).join("")}</div></div>`;
+ const track=spin.querySelector(".rouletteTrack");
+ const cardW=132, gap=10, index=22;
+ const viewport=spin.querySelector(".caseRoulette").clientWidth;
+ const target=-(index*(cardW+gap) - (viewport-cardW)/2);
+ track.style.setProperty("--roulette-x", target+"px");
+ track.classList.add("spinning");
+ setTimeout(()=>{track.classList.add("settling")},2100);
+ setTimeout(done,3300);
+}
 function openCase(id){
  if(busy)return;
- if(id==="promo" && localStorage.getItem("backToSchool2026Used")==="1"){
-  toast("Этот промо-кейс уже был открыт"); return;
- }
- if(id==="promo"){openPromoModal();return}
+ if(id==="promo" || id==="backtoschool2026"){openPromoModal();return}
  const c=CASES.find(x=>x.id===id);if(!c)return;
  if(balance<c.price){toast("Нужно ещё ◆ "+money(c.price-balance));return}
  balance-=c.price;
  const won=drop(c);busy=true;save();
- $("modal").classList.remove("hidden");$("modalTitle").textContent="КРУТИМ "+c.name;
- $("modalText").textContent="Ищем твой дроп...";$("modalBtn").classList.add("hidden");
- setTimeout(()=>{
+ $("modal").classList.remove("hidden");$("modalTitle").textContent="ОТКРЫВАЕМ "+c.name;
+ $("modalText").textContent="Лента замедляется...";
+ $("modalBtn").classList.add("hidden");
+ playCaseAnimation(c,won,()=>{
   inv.push(won);busy=false;save();renderInv();
-  $("modalTitle").textContent="ДРОП!";
-  $("modalText").innerHTML=`${won.emoji} <b>${won.name}</b><br>Стоимость: ◆ ${money(won.value)}`;
+  $("modalTitle").textContent="🎉 ТВОЙ ДРОП!";
+  $("modalText").innerHTML=`${won.emoji} <b>${won.name}</b><br><span class="dropMeta">${rarityLabel(won.rarity)} · ◆ ${money(won.value)}</span>`;
   $("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
- },2300);
+ });
 }
+
 function openPromoModal(){
  if(localStorage.getItem("backToSchool2026Used")==="1"){
   toast("Этот промо-кейс уже был открыт");
@@ -272,35 +293,58 @@ function updateUpgrade(){
    $("upgradeBtn").disabled=busy||cash>balance;
   }else{$("chance").textContent="—";$("chanceBar").style.width="0";$("upgradeBtn").disabled=true}
 }
-function upgrade(){
-  if(busy)return;
-  if(upgradeMode==="currency"){
-   const amount=getUpgradeCurrency(),mult=getCurrencyMultiplier();
-   if(!amount||amount>balance)return;
-   const target=amount*mult,ch=Math.min(95,100/mult),ok=Math.random()*100<ch;
-   balance-=amount;busy=true;save();
-   $("modal").classList.remove("hidden");$("modalTitle").textContent="АПГРЕЙД ВАЛЮТЫ...";
-   $("modalText").textContent=`Шанс ${formatChance(ch)} · крутим...`;$("modalBtn").classList.add("hidden");
-   setTimeout(()=>{
-    if(ok){balance+=target;$("modalTitle").textContent="УСПЕХ!";$("modalText").innerHTML=`Баланс увеличен до <b>◆ ${money(target)}</b>`}
-    else{$("modalTitle").textContent="НЕ ПОВЕЗЛО";$("modalText").innerHTML=`Шанс был <b>${formatChance(ch)}</b>.<br>Валюта сгорела.`}
-    busy=false;save();updateUpgrade();$("modalBtn").textContent="ЗАКРЫТЬ";$("modalBtn").classList.remove("hidden");
-   },2300);
-   return;
-  }
-  const f=inv.find(x=>String(x.id)===String($("from").value)),t=findSkin($("to").value),cash=upgradeMode==="skinCurrency"?getUpgradeCurrency():0;
-  if(!f||!t||t[2]<=f.value+cash||cash>balance)return;
-  const ch=Math.min(95,(f.value+cash)/t[2]*100);
-  const ok=Math.random()*100<ch;balance-=cash;busy=true;save();
- $("modal").classList.remove("hidden");$("modalTitle").textContent="АПГРЕЙД...";
-  $("modalText").textContent=`Шанс ${formatChance(ch)} · крутим...`;$("modalBtn").classList.add("hidden");
+function playUpgradeWheel(ch, ok, done){
+ const spin=$("spin");
+ const degPer=3.6;
+ const greenEnd=ch*degPer;
+ // If success, land inside green; otherwise land inside grey.
+ const landing = ok ? (Math.random()*Math.max(2,greenEnd-4)+2) : (greenEnd+8 + Math.random()*Math.max(5,360-greenEnd-10));
+ const turns=5+Math.floor(Math.random()*3);
+ spin.innerHTML=`<div class="upgradeWheelWrap">
+   <div class="upgradeWheel" style="--chance:${ch}%;--landing:${turns*360+landing}deg">
+     <div class="wheelGreen"></div><div class="wheelGray"></div><div class="wheelCenter"><b>${formatChance(ch)}</b><small>ШАНС</small></div>
+     <div class="wheelNeedle"></div>
+   </div>
+   <div class="wheelStatus">ПРОВЕРЯЕМ ШАНС...</div>
+ </div>`;
+ const wheel=spin.querySelector(".upgradeWheel");
+ requestAnimationFrame(()=>wheel.classList.add("wheelSpin"));
  setTimeout(()=>{
+   spin.querySelector(".wheelStatus").textContent=ok?"ПОПАЛИ В ЗЕЛЁНУЮ ЗОНУ":"СТОП. СЕРАЯ ЗОНА";
+ },2800);
+ setTimeout(done,3600);
+}
+function upgrade(){
+ if(busy)return;
+ if(upgradeMode==="currency"){
+  const amount=getUpgradeCurrency(),mult=getCurrencyMultiplier();
+  if(!amount||amount>balance)return;
+  const target=amount*mult,ch=Math.min(95,100/mult),ok=Math.random()*100<ch;
+  balance-=amount;busy=true;save();
+  $("modal").classList.remove("hidden");$("modalTitle").textContent="АПГРЕЙД ВАЛЮТЫ";
+  $("modalText").textContent=`Шанс ${formatChance(ch)}`;
+  $("modalBtn").classList.add("hidden");
+  playUpgradeWheel(ch,ok,()=>{
+   if(ok){balance+=target;$("modalTitle").textContent="💚 УСПЕХ!";$("modalText").innerHTML=`Баланс увеличен на <b>◆ ${money(target)}</b>`}
+   else{$("modalTitle").textContent="🩶 НЕ ПОВЕЗЛО";$("modalText").innerHTML=`Шанс был <b>${formatChance(ch)}</b>.<br>Валюта сгорела.`}
+   busy=false;save();updateUpgrade();$("modalBtn").textContent="ЗАКРЫТЬ";$("modalBtn").classList.remove("hidden");
+  });
+  return;
+ }
+ const f=inv.find(x=>String(x.id)===String($("from").value)),t=findSkin($("to").value),cash=upgradeMode==="skinCurrency"?getUpgradeCurrency():0;
+ if(!f||!t||t[2]<=f.value+cash||cash>balance)return;
+ const ch=Math.min(95,(f.value+cash)/t[2]*100);
+ const ok=Math.random()*100<ch;balance-=cash;busy=true;save();
+ $("modal").classList.remove("hidden");$("modalTitle").textContent="АПГРЕЙД СКИНА";
+ $("modalText").textContent=`${f.emoji} ${f.name} → ${t[3]} ${t[0]} · шанс ${formatChance(ch)}`;
+ $("modalBtn").classList.add("hidden");
+ playUpgradeWheel(ch,ok,()=>{
   const i=inv.findIndex(x=>x.id===f.id);if(i>=0)inv.splice(i,1);
-  if(ok){inv.push(item(t[0],t[1],t[2],t[3]));$("modalTitle").textContent="УСПЕХ!";$("modalText").innerHTML=`${t[3]} <b>${t[0]}</b><br>Теперь стоит ◆ ${money(t[2])}`}
-   else{$("modalTitle").textContent="НЕ ПОВЕЗЛО";$("modalText").innerHTML=`Шанс был <b>${formatChance(ch)}</b>.<br>${cash?"Скин и валюта сгорели.":"Скин сгорел."}`}
+  if(ok){inv.push(item(t[0],t[1],t[2],t[3]));$("modalTitle").textContent="💚 АПГРЕЙД УСПЕШЕН!";$("modalText").innerHTML=`${t[3]} <b>${t[0]}</b><br>Стоимость: ◆ ${money(t[2])}`}
+  else{$("modalTitle").textContent="🩶 АПГРЕЙД НЕ УДАЛСЯ";$("modalText").innerHTML=`Шанс был <b>${formatChance(ch)}</b>.<br>${cash?"Скин и валюта сгорели.":"Скин сгорел."}`}
   busy=false;fromId="";toKey="";save();renderInv();fillSelects();updateUpgrade();
   $("modalBtn").textContent="ЗАКРЫТЬ";$("modalBtn").classList.remove("hidden");
- },2300);
+ });
 }
 $("from").onchange=()=>{fromId=$("from").value;toKey="";fillSelects();updateUpgrade()};
 $("to").onchange=()=>{toKey=$("to").value;updateUpgrade()};
