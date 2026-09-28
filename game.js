@@ -85,17 +85,20 @@ const WEAPON_IMAGES={
  butterfly:"assets/skins/butterfly.png",
  karambit:"assets/skins/karambit.png",
  pistol:"assets/skins/glock.png",
- rifle:"assets/skins/rifle.png"
+ rifle:"assets/skins/rifle.png",
+ blade:"assets/skins/blade.jpeg",
+ other:"assets/skins/other.webp"
 };
 function weaponImagePath(name){
  const n=String(name||'').toLowerCase();
+ if(n.includes('blade')) return WEAPON_IMAGES.blade;
  if(n.includes('butterfly')) return WEAPON_IMAGES.butterfly;
  if(n.includes('karambit')) return WEAPON_IMAGES.karambit;
  // Пистолеты
  if(/glock|p250|usp|five-seve[nн]|deagle|tec-9|pistol|deagle/i.test(n)) return WEAPON_IMAGES.pistol;
  // Автоматы / штурмовые винтовки / SMG
  if(/\bak\b|ak |\bm4\b|m4a1|m4a4|mp7|famas|galil|smg|rifle|blaster/i.test(n)) return WEAPON_IMAGES.rifle;
- return '';
+ return WEAPON_IMAGES.other;
 }
 function weaponVisual(x, cls='weaponImg'){
  const name=x?.name ?? x?.[0] ?? '';
