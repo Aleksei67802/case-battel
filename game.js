@@ -79,6 +79,30 @@ function save(){
  $("count").textContent=inv.length;
 }
 function item(name,rarity,value,emoji){return{id:Date.now()+"_"+Math.random().toString(36).slice(2),name,rarity,value,emoji,favorite:false}}
+
+// Картинки оружия. Один тип картинки используется для всех соответствующих скинов.
+const WEAPON_IMAGES={
+ butterfly:"assets/skins/butterfly.png",
+ karambit:"assets/skins/karambit.png",
+ pistol:"assets/skins/glock.png",
+ rifle:"assets/skins/rifle.png"
+};
+function weaponImagePath(name){
+ const n=String(name||'').toLowerCase();
+ if(n.includes('butterfly')) return WEAPON_IMAGES.butterfly;
+ if(n.includes('karambit')) return WEAPON_IMAGES.karambit;
+ // Пистолеты
+ if(/glock|p250|usp|five-seve[nн]|deagle|tec-9|pistol|deagle/i.test(n)) return WEAPON_IMAGES.pistol;
+ // Автоматы / штурмовые винтовки / SMG
+ if(/\bak\b|ak |\bm4\b|m4a1|m4a4|mp7|famas|galil|smg|rifle|blaster/i.test(n)) return WEAPON_IMAGES.rifle;
+ return '';
+}
+function weaponVisual(x, cls='weaponImg'){
+ const name=x?.name ?? x?.[0] ?? '';
+ const emoji=x?.emoji ?? x?.[3] ?? '';
+ const src=weaponImagePath(name);
+ return src ? `<img class="${cls}" src="${src}" alt="${name}">` : emoji;
+}
 function drop(c){
  const total=c.items.reduce((s,x)=>s+x[4],0),r=Math.random()*total;
  let n=0;
@@ -121,7 +145,7 @@ function renderInv(){
  if(!a.length){$("inv").innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px;color:#666a83">Инвентарь пуст. Открой кейс, чтобы получить скин.</div>';return}
   $("inv").innerHTML=a.slice().reverse().map(x=>`
   <article class="item"><div class="itemTop"><div class="rarity">${x.rarity}</div><button class="favoriteBtn ${x.favorite?"on":""}" title="${x.favorite?"Убрать из избранного":"Добавить в избранное"}" onclick="toggleFavorite('${x.id}')">★</button></div>
-  <div class="emoji">${x.emoji}</div><h4>${x.name}</h4><div class="value">◆ ${money(x.value)}</div>
+  <div class="emoji">${weaponVisual(x)}</div><h4>${x.name}</h4><div class="value">◆ ${money(x.value)}</div>
   <button class="sell" ${x.favorite?"disabled":""} onclick="sell('${x.id}')">${x.favorite?"★ В ИЗБРАННОМ":"ПРОДАТЬ · ◆ "+money(x.value)}</button></article>`).join("");
 }
 
@@ -137,7 +161,7 @@ function showRetreat(id){
  const items=c.items||[];
  $("modal").classList.remove("hidden");
  $("modalTitle").textContent=id==="promo"?"ЧТО ВНУТРИ — BACK TO SCHOOL":"ЧТО ВНУТРИ";
- $("modalText").innerHTML=items.map(x=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #ffffff10"><span style="font-size:25px">${x[3]}</span><span style="flex:1;text-align:left;font-weight:800">${x[0]}</span><span style="font-size:11px;opacity:.7">${x[4]}%</span></div>`).join("");
+ $("modalText").innerHTML=items.map(x=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #ffffff10"><span class="retreatIcon">${weaponVisual(x, "weaponImg smallWeapon")}</span><span style="flex:1;text-align:left;font-weight:800">${x[0]}</span><span style="font-size:11px;opacity:.7">${x[4]}%</span></div>`).join("");
  $("modalBtn").textContent="ЗАКРЫТЬ";
  $("modalBtn").classList.remove("hidden");
 }
@@ -155,7 +179,7 @@ function buildCaseRoulette(c, won){
  const targetIndex=24;
  for(let i=0;i<31;i++){
    const x = i===targetIndex ? won : source[Math.floor(Math.random()*source.length)];
-   cards.push(`<div class="rouletteItem ${rarityClass(x.rarity)}"><div class="riIcon">${x.emoji}</div><b>${x.name}</b><small>◆ ${money(x.value)}</small></div>`);
+   cards.push(`<div class="rouletteItem ${rarityClass(x.rarity)}"><div class="riIcon">${weaponVisual(x)}</div><b>${x.name}</b><small>◆ ${money(x.value)}</small></div>`);
  }
  track.innerHTML=cards.join("");
  track.style.transition="none";
@@ -215,7 +239,7 @@ function openCase(id){
  setTimeout(()=>{
   inv.push(won);busy=false;save();renderInv();
   $("modalTitle").textContent="🎉 ТВОЙ ДРОП!";
-  $("modalText").innerHTML=`${won.emoji} <b>${won.name}</b><br>${won.rarity} · ◆ ${money(won.value)}`;
+  $("modalText").innerHTML=`${weaponVisual(won)} <b>${won.name}</b><br>${won.rarity} · ◆ ${money(won.value)}`;
   $("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
  },3900);
 }
@@ -252,7 +276,7 @@ function submitPromo(){
  setTimeout(()=>{
   inv.push(won);busy=false;save();renderInv();
   $("modalTitle").textContent="🎒 ТВОЙ ПРЕДМЕТ!";
-  $("modalText").innerHTML=`${won.emoji} <b>${won.name}</b><br>${won.rarity} · ◆ ${money(won.value)}`;
+  $("modalText").innerHTML=`${weaponVisual(won)} <b>${won.name}</b><br>${won.rarity} · ◆ ${money(won.value)}`;
   $("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
  },3900);
 }
@@ -276,7 +300,7 @@ function skinKey(x){return x[0]+"|"+x[2]}
 function fillSelects(){
  const from=$("from"),to=$("to");
  from.innerHTML='<option value="">Выбери предмет из инвентаря</option>'+
- inv.map(x=>`<option value="${x.id}">${x.emoji} ${x.name} — ◆ ${money(x.value)}</option>`).join("");
+ inv.map(x=>`<option value="${x.id}">${x.name} — ◆ ${money(x.value)}</option>`).join("");
   from.disabled=upgradeMode==="currency";
  const f=inv.find(x=>x.id===fromId);
  if(!f)fromId="";
@@ -285,7 +309,7 @@ function fillSelects(){
   const sourceValue=(f?.value||0)+cash;
   const targets=SKINS.filter(x=>f&&x[2]>sourceValue).sort((a,b)=>a[2]-b[2]);
  to.innerHTML='<option value="">Выбери скин дороже</option>'+
- targets.map(x=>`<option value="${skinKey(x)}">${x[3]} ${x[0]} — ◆ ${money(x[2])}</option>`).join("");
+ targets.map(x=>`<option value="${skinKey(x)}">${x[0]} — ◆ ${money(x[2])}</option>`).join("");
   to.disabled=upgradeMode==="currency";
  to.value=toKey;
  if(!targets.some(x=>skinKey(x)===toKey))toKey="";
@@ -304,7 +328,7 @@ function updateCurrencyPreview(){
  $("currencyTarget").textContent=amount?`При успехе получишь ◆ ${money(amount*mult)} · шанс ${formatChance(Math.min(95,100/mult))}`:"Введи сумму для расчёта";
 }
 function card(el,x,empty){
- el.innerHTML=x?`<div><div class="big">${x[3]||x.emoji}</div><b>${x[0]||x.name}</b><small>◆ ${money(x[2]||x.value)}</small></div>`:empty;
+ el.innerHTML=x?`<div><div class="big">${weaponVisual(x)}</div><b>${x[0]||x.name}</b><small>◆ ${money(x[2]||x.value)}</small></div>`:empty;
 }
 function updateUpgrade(){
   const f=upgradeMode==="currency"?null:inv.find(x=>String(x.id)===String($("from").value));
@@ -354,12 +378,12 @@ function upgrade(){
   const ch=Math.min(95,(f.value+cash)/t[2]*100);
   const ok=Math.random()*100<ch;balance-=cash;busy=true;save();
   $("modal").classList.remove("hidden");$("modalTitle").textContent="АПГРЕЙД СКИНА";
-  $("modalText").textContent=`${f.emoji} ${f.name} → ${t[3]} ${t[0]} · шанс ${formatChance(ch)}`;
+  $("modalText").textContent=`${weaponVisual(f)} ${f.name} → ${weaponVisual(t)} ${t[0]} · шанс ${formatChance(ch)}`;
   $("modalBtn").classList.add("hidden");
   showUpgradeWheel(ch,ok);
   setTimeout(()=>{
    const i=inv.findIndex(x=>x.id===f.id);if(i>=0)inv.splice(i,1);
-   if(ok){inv.push(item(t[0],t[1],t[2],t[3]));$("modalTitle").textContent="🎉 УСПЕХ!";$("modalText").innerHTML=`${t[3]} <b>${t[0]}</b><br>Теперь стоит ◆ ${money(t[2])}`}
+   if(ok){inv.push(item(t[0],t[1],t[2],t[3]));$("modalTitle").textContent="🎉 УСПЕХ!";$("modalText").innerHTML=`${weaponVisual(t)} <b>${t[0]}</b><br>Теперь стоит ◆ ${money(t[2])}`}
    else{$("modalTitle").textContent="НЕ ПОВЕЗЛО";$("modalText").innerHTML=`Шанс был <b>${formatChance(ch)}</b>.<br>${cash?"Скин и валюта сгорели.":"Скин сгорел."}`}
    busy=false;fromId="";toKey="";save();renderInv();fillSelects();updateUpgrade();
    $("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
