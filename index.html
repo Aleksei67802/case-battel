@@ -22,7 +22,19 @@
  <p class="note" id="upgradeNote">При успехе исходный скин сгорает, а цель отправляется в инвентарь. При проигрыше исходный скин теряется.</p></section>
 </main>
 <nav><button class="active" data-page="cases">▣<span>Кейсы</span></button><button data-page="inventory">▤<span>Инвентарь</span></button><button data-page="upgrade">↗<span>Апгрейд</span></button></nav>
-<div class="modal hidden" id="modal"><div class="modalbox"><div class="spinner" id="spin"></div><h2 id="modalTitle">КРУТИМ...</h2><p id="modalText"></p><button id="modalBtn" class="upgradeBtn hidden">ЗАКРЫТЬ</button></div></div>
+<div class="modal hidden" id="modal"><div class="modalbox gameModalBox">
+  <div class="caseRoulette" id="caseRoulette">
+    <div class="roulettePointer"></div>
+    <div class="rouletteViewport"><div class="rouletteTrack" id="rouletteTrack"></div></div>
+  </div>
+  <div class="upgradeWheel" id="upgradeWheel">
+    <div class="upgradePointer" id="upgradePointer"></div>
+    <div class="upgradeRing" id="upgradeRing"><div class="upgradeHole"><strong id="wheelChance">—</strong><small>ШАНС</small></div></div>
+  </div>
+  <h2 id="modalTitle">КРУТИМ...</h2>
+  <p id="modalText"></p>
+  <button id="modalBtn" class="upgradeBtn hidden">ЗАБРАТЬ</button>
+</div></div>
 <div class="modal hidden" id="promoModal">
 <div class="modalbox promoBox">
   <div class="promoIcon">🎒</div>

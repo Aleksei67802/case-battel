@@ -142,46 +142,83 @@ function showRetreat(id){
  $("modalBtn").classList.remove("hidden");
 }
 
-function rarityLabel(r){
- return ({common:"ОБЫЧНЫЙ",rare:"РЕДКИЙ",epic:"ЭПИК",legendary:"ЛЕГЕНДАРНЫЙ",mythic:"МИФИЧЕСКИЙ"})[r]||r.toUpperCase();
+
+function rarityClass(r){ return String(r||"common").toLowerCase().replace(/[^a-z]/g,""); }
+function itemFromTuple(x){ return {name:x[0],rarity:x[1],value:x[2],emoji:x[3]}; }
+
+function buildCaseRoulette(c, won){
+ const box=$("caseRoulette"), track=$("rouletteTrack");
+ box.classList.add("active"); $("upgradeWheel").classList.remove("active");
+ const source=c.items.map(itemFromTuple);
+ const cards=[];
+ // Target is near the end, with plenty of decoys before it.
+ const targetIndex=24;
+ for(let i=0;i<31;i++){
+   const x = i===targetIndex ? won : source[Math.floor(Math.random()*source.length)];
+   cards.push(`<div class="rouletteItem ${rarityClass(x.rarity)}"><div class="riIcon">${x.emoji}</div><b>${x.name}</b><small>◆ ${money(x.value)}</small></div>`);
+ }
+ track.innerHTML=cards.join("");
+ track.style.transition="none";
+ track.style.transform="translateX(0px)";
+ requestAnimationFrame(()=>{
+   const itemW=130;
+   const viewport=box.querySelector(".rouletteViewport");
+   const center=(viewport.clientWidth/2);
+   const targetCenter=targetIndex*itemW+60;
+   const end=center-targetCenter;
+   track.style.transition="transform 3.7s cubic-bezier(.08,.72,.12,1)";
+   track.style.transform=`translateX(${end}px)`;
+ });
 }
-function rouletteCard(x){
- return `<div class="rouletteCard rarity-${x[1]}"><div class="rIcon">${x[3]}</div><b>${x[0]}</b><small>${rarityLabel(x[1])} · ◆ ${money(x[2])}</small></div>`;
+
+function showUpgradeWheel(ch, ok){
+ const box=$("upgradeWheel"), ring=$("upgradeRing"), pointer=$("upgradePointer");
+ $("caseRoulette").classList.remove("active"); box.classList.add("active");
+ const deg=Math.max(1,Math.min(95,ch))*3.6;
+ ring.style.setProperty("--successDeg",deg+"deg");
+ $("wheelChance").textContent=formatChance(ch);
+ pointer.style.transition="none";
+ pointer.style.transform="translateX(-50%) rotate(0deg)";
+ requestAnimationFrame(()=>{
+   // The pointer is fixed at the top; only this pointer rotates.
+   let angle;
+   if(ok){
+     angle=deg*.18 + Math.random()*Math.max(2,deg*.64);
+   }else{
+     angle=deg + 8 + Math.random()*Math.max(5,360-deg-16);
+   }
+   angle += 360*(4+Math.floor(Math.random()*3));
+   pointer.style.transition="transform 3.8s cubic-bezier(.08,.72,.12,1)";
+   pointer.style.transform=`translateX(-50%) rotate(${angle}deg)`;
+ });
 }
-function playCaseAnimation(c, won, done){
- const spin=$("spin");
- const pool=[];
- for(let i=0;i<28;i++) pool.push(c.items[Math.floor(Math.random()*c.items.length)]);
- // Put the already-decided winner at the exact landing position.
- pool[22]=[won.name,won.rarity,won.value,won.emoji,100];
- spin.innerHTML=`<div class="caseRoulette"><div class="roulettePointer"></div><div class="rouletteTrack">${pool.map(rouletteCard).join("")}</div></div>`;
- const track=spin.querySelector(".rouletteTrack");
- const cardW=132, gap=10, index=22;
- const viewport=spin.querySelector(".caseRoulette").clientWidth;
- const target=-(index*(cardW+gap) - (viewport-cardW)/2);
- track.style.setProperty("--roulette-x", target+"px");
- track.classList.add("spinning");
- setTimeout(()=>{track.classList.add("settling")},2100);
- setTimeout(done,3300);
+
+function hideAnimationLayers(){
+ $("caseRoulette").classList.remove("active");
+ $("upgradeWheel").classList.remove("active");
 }
 function openCase(id){
  if(busy)return;
- if(id==="promo" || id==="backtoschool2026"){openPromoModal();return}
+ if(id==="promo" && localStorage.getItem("backToSchool2026Used")==="1"){
+  toast("Этот промо-кейс уже был открыт"); return;
+ }
+ if(id==="promo"){openPromoModal();return}
  const c=CASES.find(x=>x.id===id);if(!c)return;
  if(balance<c.price){toast("Нужно ещё ◆ "+money(c.price-balance));return}
  balance-=c.price;
  const won=drop(c);busy=true;save();
- $("modal").classList.remove("hidden");$("modalTitle").textContent="ОТКРЫВАЕМ "+c.name;
- $("modalText").textContent="Лента замедляется...";
+ $("modal").classList.remove("hidden");
+ $("modalTitle").textContent="ОТКРЫВАЕМ "+c.name;
+ $("modalText").textContent="Лента разгоняется...";
  $("modalBtn").classList.add("hidden");
- playCaseAnimation(c,won,()=>{
+ buildCaseRoulette(c,won);
+ setTimeout(()=>{
   inv.push(won);busy=false;save();renderInv();
   $("modalTitle").textContent="🎉 ТВОЙ ДРОП!";
-  $("modalText").innerHTML=`${won.emoji} <b>${won.name}</b><br><span class="dropMeta">${rarityLabel(won.rarity)} · ◆ ${money(won.value)}</span>`;
+  $("modalText").innerHTML=`${won.emoji} <b>${won.name}</b><br>${won.rarity} · ◆ ${money(won.value)}`;
   $("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
- });
+ },3900);
 }
-
 function openPromoModal(){
  if(localStorage.getItem("backToSchool2026Used")==="1"){
   toast("Этот промо-кейс уже был открыт");
@@ -206,16 +243,18 @@ function submitPromo(){
  closePromoModal();
  localStorage.setItem("backToSchool2026Used","1");
  renderCases();
- const won=drop(PROMO_CASE);busy=true;
- $("modal").classList.remove("hidden");$("modalTitle").textContent="BACK TO SCHOOL";
- $("modalText").textContent="Промокод принят! Открываем ящик...";
+ const won=drop(PROMO_CASE);busy=true;save();
+ $("modal").classList.remove("hidden");
+ $("modalTitle").textContent="BACK TO SCHOOL";
+ $("modalText").textContent="Лента разгоняется...";
  $("modalBtn").classList.add("hidden");
+ buildCaseRoulette(PROMO_CASE,won);
  setTimeout(()=>{
   inv.push(won);busy=false;save();renderInv();
   $("modalTitle").textContent="🎒 ТВОЙ ПРЕДМЕТ!";
-  $("modalText").innerHTML=`${won.emoji} <b>${won.name}</b><br>Стоимость: ◆ ${money(won.value)}`;
+  $("modalText").innerHTML=`${won.emoji} <b>${won.name}</b><br>${won.rarity} · ◆ ${money(won.value)}`;
   $("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
- },2300);
+ },3900);
 }
 
 function sell(id){
@@ -293,60 +332,38 @@ function updateUpgrade(){
    $("upgradeBtn").disabled=busy||cash>balance;
   }else{$("chance").textContent="—";$("chanceBar").style.width="0";$("upgradeBtn").disabled=true}
 }
-function playUpgradeWheel(ch, ok, done){
- const spin=$("spin");
- const degPer=3.6;
- const greenEnd=ch*degPer;
- // The result is decided before animation. The needle only visualizes it.
- const landing = ok
-   ? (Math.random()*Math.max(2,greenEnd-4)+2)
-   : (greenEnd+8 + Math.random()*Math.max(5,360-greenEnd-10));
- const turns=5+Math.floor(Math.random()*3);
- spin.innerHTML=`<div class="upgradeWheelWrap">
-   <div class="upgradeWheel" style="--chance:${ch}%">
-     <div class="wheelCenter"><b>${formatChance(ch)}</b><small>ШАНС</small></div>
-     <div class="wheelNeedle" style="--needle-landing:${turns*360+landing}deg"></div>
-   </div>
-   <div class="wheelStatus">СТРЕЛКА КРУТИТСЯ...</div>
- </div>`;
- const needle=spin.querySelector(".wheelNeedle");
- requestAnimationFrame(()=>needle.classList.add("wheelSpin"));
- setTimeout(()=>{
-   spin.querySelector(".wheelStatus").textContent=ok?"ПОПАЛИ В ЗЕЛЁНУЮ ЗОНУ":"СТОП. СЕРАЯ ЗОНА";
- },2800);
- setTimeout(done,3600);
-}
 function upgrade(){
- if(busy)return;
- if(upgradeMode==="currency"){
-  const amount=getUpgradeCurrency(),mult=getCurrencyMultiplier();
-  if(!amount||amount>balance)return;
-  const target=amount*mult,ch=Math.min(95,100/mult),ok=Math.random()*100<ch;
-  balance-=amount;busy=true;save();
-  $("modal").classList.remove("hidden");$("modalTitle").textContent="АПГРЕЙД ВАЛЮТЫ";
-  $("modalText").textContent=`Шанс ${formatChance(ch)}`;
+  if(busy)return;
+  if(upgradeMode==="currency"){
+   const amount=getUpgradeCurrency(),mult=getCurrencyMultiplier();
+   if(!amount||amount>balance)return;
+   const target=amount*mult,ch=Math.min(95,100/mult),ok=Math.random()*100<ch;
+   balance-=amount;busy=true;save();
+   $("modal").classList.remove("hidden");$("modalTitle").textContent="АПГРЕЙД ВАЛЮТЫ";
+   $("modalText").textContent=`Шанс ${formatChance(ch)} · крутим...`;$("modalBtn").classList.add("hidden");
+   showUpgradeWheel(ch,ok);
+   setTimeout(()=>{
+    if(ok){balance+=target;$("modalTitle").textContent="УСПЕХ!";$("modalText").innerHTML=`Баланс увеличен до <b>◆ ${money(target)}</b>`}
+    else{$("modalTitle").textContent="НЕ ПОВЕЗЛО";$("modalText").innerHTML=`Шанс был <b>${formatChance(ch)}</b>.<br>Валюта сгорела.`}
+    busy=false;save();updateUpgrade();$("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
+   },4000);
+   return;
+  }
+  const f=inv.find(x=>String(x.id)===String($("from").value)),t=findSkin($("to").value),cash=upgradeMode==="skinCurrency"?getUpgradeCurrency():0;
+  if(!f||!t||t[2]<=f.value+cash||cash>balance)return;
+  const ch=Math.min(95,(f.value+cash)/t[2]*100);
+  const ok=Math.random()*100<ch;balance-=cash;busy=true;save();
+  $("modal").classList.remove("hidden");$("modalTitle").textContent="АПГРЕЙД СКИНА";
+  $("modalText").textContent=`${f.emoji} ${f.name} → ${t[3]} ${t[0]} · шанс ${formatChance(ch)}`;
   $("modalBtn").classList.add("hidden");
-  playUpgradeWheel(ch,ok,()=>{
-   if(ok){balance+=target;$("modalTitle").textContent="💚 УСПЕХ!";$("modalText").innerHTML=`Баланс увеличен на <b>◆ ${money(target)}</b>`}
-   else{$("modalTitle").textContent="🩶 НЕ ПОВЕЗЛО";$("modalText").innerHTML=`Шанс был <b>${formatChance(ch)}</b>.<br>Валюта сгорела.`}
-   busy=false;save();updateUpgrade();$("modalBtn").textContent="ЗАКРЫТЬ";$("modalBtn").classList.remove("hidden");
-  });
-  return;
- }
- const f=inv.find(x=>String(x.id)===String($("from").value)),t=findSkin($("to").value),cash=upgradeMode==="skinCurrency"?getUpgradeCurrency():0;
- if(!f||!t||t[2]<=f.value+cash||cash>balance)return;
- const ch=Math.min(95,(f.value+cash)/t[2]*100);
- const ok=Math.random()*100<ch;balance-=cash;busy=true;save();
- $("modal").classList.remove("hidden");$("modalTitle").textContent="АПГРЕЙД СКИНА";
- $("modalText").textContent=`${f.emoji} ${f.name} → ${t[3]} ${t[0]} · шанс ${formatChance(ch)}`;
- $("modalBtn").classList.add("hidden");
- playUpgradeWheel(ch,ok,()=>{
-  const i=inv.findIndex(x=>x.id===f.id);if(i>=0)inv.splice(i,1);
-  if(ok){inv.push(item(t[0],t[1],t[2],t[3]));$("modalTitle").textContent="💚 АПГРЕЙД УСПЕШЕН!";$("modalText").innerHTML=`${t[3]} <b>${t[0]}</b><br>Стоимость: ◆ ${money(t[2])}`}
-  else{$("modalTitle").textContent="🩶 АПГРЕЙД НЕ УДАЛСЯ";$("modalText").innerHTML=`Шанс был <b>${formatChance(ch)}</b>.<br>${cash?"Скин и валюта сгорели.":"Скин сгорел."}`}
-  busy=false;fromId="";toKey="";save();renderInv();fillSelects();updateUpgrade();
-  $("modalBtn").textContent="ЗАКРЫТЬ";$("modalBtn").classList.remove("hidden");
- });
+  showUpgradeWheel(ch,ok);
+  setTimeout(()=>{
+   const i=inv.findIndex(x=>x.id===f.id);if(i>=0)inv.splice(i,1);
+   if(ok){inv.push(item(t[0],t[1],t[2],t[3]));$("modalTitle").textContent="🎉 УСПЕХ!";$("modalText").innerHTML=`${t[3]} <b>${t[0]}</b><br>Теперь стоит ◆ ${money(t[2])}`}
+   else{$("modalTitle").textContent="НЕ ПОВЕЗЛО";$("modalText").innerHTML=`Шанс был <b>${formatChance(ch)}</b>.<br>${cash?"Скин и валюта сгорели.":"Скин сгорел."}`}
+   busy=false;fromId="";toKey="";save();renderInv();fillSelects();updateUpgrade();
+   $("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
+  },4000);
 }
 $("from").onchange=()=>{fromId=$("from").value;toKey="";fillSelects();updateUpgrade()};
 $("to").onchange=()=>{toKey=$("to").value;updateUpgrade()};
@@ -354,7 +371,7 @@ $("upgradeCurrency").oninput=()=>{fillSelects();updateUpgrade()};
 $("currencyMultiplier").onchange=()=>{updateCurrencyPreview();updateUpgrade()};
 $("upgradeModes").onclick=e=>{const b=e.target.closest(".modeBtn");if(!b)return;upgradeMode=b.dataset.mode;document.querySelectorAll(".modeBtn").forEach(x=>x.classList.remove("on"));b.classList.add("on");$("currencyUpgrade").classList.toggle("active",upgradeMode==="skinCurrency"||upgradeMode==="currency");$("currencyOnly").classList.toggle("active",upgradeMode==="currency");$("skinSourceSlot").style.display=upgradeMode==="currency"?"none":"";$("skinTargetSlot").style.display=upgradeMode==="currency"?"none":"";$("upgradeArrow").style.display=upgradeMode==="currency"?"none":"";$("upbox").classList.toggle("currencyMode",upgradeMode==="currency");fillSelects();updateUpgrade()};
 $("upgradeBtn").onclick=upgrade;
-$("modalBtn").onclick=()=>{if(!busy)$("modal").classList.add("hidden")};
+$("modalBtn").onclick=()=>{if(!busy){$("modal").classList.add("hidden");hideAnimationLayers()}};
 $("retreatClose").onclick=()=>$("retreatModal").classList.add("hidden");
 $("promoSubmit").onclick=submitPromo;
 $("promoClose").onclick=closePromoModal;
