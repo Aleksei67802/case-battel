@@ -87,10 +87,12 @@ const WEAPON_IMAGES={
  pistol:"assets/skins/glock.png",
  rifle:"assets/skins/rifle.png",
  blade:"assets/skins/blade.jpeg",
- other:"assets/skins/other.webp"
+ phoenix:"assets/skins/phoenix.png",
+ other:"assets/skins/other.png"
 };
 function weaponImagePath(name){
  const n=String(name||'').toLowerCase();
+ if(n === 'phoenix dragon') return WEAPON_IMAGES.phoenix;
  if(n.includes('blade')) return WEAPON_IMAGES.blade;
  if(n.includes('butterfly')) return WEAPON_IMAGES.butterfly;
  if(n.includes('karambit')) return WEAPON_IMAGES.karambit;
