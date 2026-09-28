@@ -1,0 +1,38 @@
+<!doctype html><html lang="ru"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CASE BATTLE</title><link rel="stylesheet" href="style.css?v=51"></head><body>
+<div class="app">
+<header><div><div class="logo">CASE<span>BATTLE</span></div><small>ОТКРЫВАЙ • УЛУЧШАЙ • РИСКУЙ</small></div><div class="bal">◆ <b id="balance">100</b></div></header>
+<main>
+<section class="page active" id="cases"><div class="hero"><span>CASE DROP</span><h1>Открой свой дроп</h1><p>Можно получить предмет дешевле кейса или сорвать джекпот.</p></div><div class="title">КЕЙСЫ <em>9 платных + FREE + PROMO</em></div><div class="promoCaseStandalone">
+ <div class="promoRibbon">PROMO · CODE REQUIRED</div>
+ <div class="promoChestBig">🎒</div>
+ <div class="promoCaseInfo"><div class="promoTag">BACK TO SCHOOL 2026</div><h2>BACK TO SCHOOL</h2><p>Специальный промо-ящик · 10 предметов</p></div>
+ <button class="promoStandaloneOpen" onclick="openCase('backtoschool2026')">🔐 ОТКРЫТЬ ПО ПРОМОКОДУ</button>
+</div>
+<div class="cases" id="caseGrid"></div></section>
+ <section class="page" id="inventory"><div class="head"><div><h2>Инвентарь</h2><small><b id="count">0</b> предметов</small></div><button id="sellAll">Продать все</button></div><div class="filters" id="filters"><button class="on" data-f="all">Все</button><button data-f="common">Обычные</button><button data-f="rare">Редкие</button><button data-f="epic">Эпик</button><button data-f="legendary">Легендарные</button></div><div class="inv" id="inv"></div></section>
+ <section class="page" id="upgrade"><div class="head"><div><h2>Апгрейдер</h2><small>Рискни скином, валютой или используй оба ресурса</small></div></div>
+ <div class="upgradeModes" id="upgradeModes"><button class="modeBtn on" data-mode="skin">ТОЛЬКО СКИН</button><button class="modeBtn" data-mode="skinCurrency">СКИН + ВАЛЮТА</button><button class="modeBtn" data-mode="currency">ТОЛЬКО ВАЛЮТА</button></div>
+ <div class="upbox" id="upbox"><div class="slot" id="skinSourceSlot"><label>ТВОЙ СКИН</label><div id="fromCard" class="pick">Выбери предмет</div><select id="from"></select></div><div class="arr" id="upgradeArrow">→</div><div class="slot" id="skinTargetSlot"><label>ЦЕЛЬ</label><div id="toCard" class="pick">Выбери скин дороже</div><select id="to"></select></div></div>
+ <div class="currencyUpgrade" id="currencyUpgrade"><label>ДОБАВИТЬ ВАЛЮТУ <span id="upgradeBalance"></span></label><div class="currencyInput"><span>◆</span><input id="upgradeCurrency" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div><small>Эта сумма будет списана даже при проигрыше.</small></div>
+ <div class="currencyOnly" id="currencyOnly"><label>ВО СКОЛЬКО РАЗ УЛУЧШИТЬ</label><select id="currencyMultiplier"><option value="2">2× валюты</option><option value="3">3× валюты</option><option value="5">5× валюты</option><option value="10">10× валюты</option><option value="20">20× валюты</option><option value="50">50× валюты</option><option value="100">100× валюты</option></select><div id="currencyTarget" class="currencyTarget">Введи сумму для расчёта</div></div>
+ <div class="chance"><span>ШАНС УСПЕХА</span><b id="chance">—</b><div><i id="chanceBar"></i></div></div>
+ <button class="upgradeBtn" id="upgradeBtn" disabled>УЛУЧШИТЬ</button>
+ <p class="note" id="upgradeNote">При успехе исходный скин сгорает, а цель отправляется в инвентарь. При проигрыше исходный скин теряется.</p></section>
+</main>
+<nav><button class="active" data-page="cases">▣<span>Кейсы</span></button><button data-page="inventory">▤<span>Инвентарь</span></button><button data-page="upgrade">↗<span>Апгрейд</span></button></nav>
+<div class="modal hidden" id="modal"><div class="modalbox"><div class="spinner" id="spin"></div><h2 id="modalTitle">КРУТИМ...</h2><p id="modalText"></p><button id="modalBtn" class="upgradeBtn hidden">ЗАКРЫТЬ</button></div></div>
+<div class="modal hidden" id="promoModal">
+<div class="modalbox promoBox">
+  <div class="promoIcon">🎒</div>
+  <h2>BACK TO SCHOOL</h2>
+  <p>Введи промокод, чтобы открыть этот специальный ящик.</p>
+  <input id="promoInput" class="promoInput" type="text" autocomplete="off" spellcheck="false" placeholder="Введи промокод">
+  <button id="promoSubmit" class="upgradeBtn">ПРОВЕРИТЬ И ОТКРЫТЬ</button>
+  <p class="promoHint">Где найти промокод?<br><a href="https://t.me/skinscaseoriginal" target="_blank" rel="noopener">t.me/skinscaseoriginal</a></p>
+  <button id="promoClose" class="promoClose">ЗАКРЫТЬ</button>
+</div></div>
+<div class="modal hidden" id="retreatModal"><div class="modalbox retreatBox"><h2 id="retreatTitle">SHOW RETREAT</h2><p>Возможные предметы и шанс выпадения</p><div id="retreatText"></div><button id="retreatClose" class="upgradeBtn">ЗАКРЫТЬ</button></div></div>
+<div class="toast" id="toast"></div>
+</div><script src="game.js?v=51"></script></body></html>
