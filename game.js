@@ -175,39 +175,80 @@ function showRetreat(id){
 function rarityClass(r){ return String(r||"common").toLowerCase().replace(/[^a-z]/g,""); }
 function itemFromTuple(x){ return {name:x[0],rarity:x[1],value:x[2],emoji:x[3]}; }
 
-function buildCaseRoulette(c, won){
- const box=$("caseRoulette"), track=$("rouletteTrack");
+function buildCaseRoulette(c, wonList){
+ const box=$("caseRoulette");
  box.classList.add("active"); $("upgradeWheel").classList.remove("active");
- const source=c.items.map(itemFromTuple);
- const cards=[];
- // Target is near the end, with plenty of decoys before it.
- const targetIndex=24;
- for(let i=0;i<31;i++){
-   const x = i===targetIndex ? won : source[Math.floor(Math.random()*source.length)];
-   cards.push(`<div class="rouletteItem ${rarityClass(x.rarity)}"><div class="riIcon">${weaponVisual(x)}</div><b>${x.name}</b><small>◆ ${money(x.value)}</small></div>`);
- }
- track.innerHTML=cards.join("");
- track.style.transition="none";
- track.style.transform="translateX(0px)";
- requestAnimationFrame(()=>{
-   const viewport=box.querySelector(".rouletteViewport");
-   const firstCard=track.querySelector(".rouletteItem");
-   if(!viewport || !firstCard)return;
-
-   // Важно: на телефоне ширина карточки меньше, чем на ПК.
-   // Поэтому нельзя использовать фиксированные 130px — иначе стрелка
-   // может остановиться на одном предмете, а в инвентарь попадёт другой.
-   const cardWidth=firstCard.getBoundingClientRect().width;
-   const styles=getComputedStyle(track);
-   const gap=parseFloat(styles.columnGap || styles.gap || "0") || 0;
-   const step=cardWidth+gap;
-   const center=viewport.clientWidth/2;
-   const targetCenter=targetIndex*step+cardWidth/2;
-   const end=center-targetCenter;
-
-   track.style.transition="transform 3.7s cubic-bezier(.08,.72,.12,1)";
-   track.style.transform=`translateX(${end}px)`;
+ const list=Array.isArray(wonList)?wonList:[wonList];
+ box.innerHTML='<div class="multiRoulette" id="multiRoulette"></div>';
+ const host=$("multiRoulette");
+ list.forEach((won,rowIndex)=>{
+   const row=document.createElement("div"); row.className="multiRouletteRow";
+   row.innerHTML='<div class="roulettePointer"></div><div class="rouletteViewport"><div class="rouletteTrack"></div></div>';
+   host.appendChild(row);
+   const track=row.querySelector(".rouletteTrack");
+   const viewport=row.querySelector(".rouletteViewport");
+   const source=c.items.map(itemFromTuple);
+   const cards=[];
+   const targetIndex=24;
+   for(let i=0;i<31;i++){
+     const x=i===targetIndex?won:source[Math.floor(Math.random()*source.length)];
+     cards.push(`<div class="rouletteItem ${rarityClass(x.rarity)}"><div class="riIcon">${weaponVisual(x)}</div><b>${x.name}</b><small>◆ ${money(x.value)}</small></div>`);
+   }
+   track.innerHTML=cards.join("");
+   track.style.transition="none"; track.style.transform="translateX(0px)";
+   requestAnimationFrame(()=>{
+     const firstCard=track.querySelector(".rouletteItem"); if(!firstCard)return;
+     const cardWidth=firstCard.getBoundingClientRect().width;
+     const styles=getComputedStyle(track);
+     const gap=parseFloat(styles.columnGap||styles.gap||"0")||0;
+     const step=cardWidth+gap;
+     const center=viewport.clientWidth/2;
+     const targetCenter=targetIndex*step+cardWidth/2;
+     const end=center-targetCenter;
+     track.style.transition="transform 3.7s cubic-bezier(.08,.72,.12,1)";
+     track.style.transform=`translateX(${end}px)`;
+   });
  });
+}
+
+function openQuantityModal(c){
+ if(busy)return;
+ window.pendingCase=c; window.pendingCaseQty=1;
+ $("qtyCaseIcon").textContent=c.art||"📦";
+ $("qtyTitle").textContent=`СКОЛЬКО КЕЙСОВ ОТКРЫТЬ?`;
+ $("qtyPrice").textContent=`Цена за 1 кейс: ◆ ${money(c.price)}`;
+ document.querySelectorAll("#qtyChoices button").forEach(b=>b.classList.toggle("on",b.dataset.qty==="1"));
+ updateQuantityModal();
+ $("caseQtyModal").classList.remove("hidden");
+}
+function updateQuantityModal(){
+ const c=window.pendingCase;if(!c)return;
+ const q=Number(window.pendingCaseQty||1),total=c.price*q;
+ $("qtyTotal").textContent=`Итого: ◆ ${money(total)}`;
+ $("qtyConfirm").textContent=`ОТКРЫТЬ ${q} ${q===1?"КЕЙС":"КЕЙСОВ"}`;
+ $("qtyConfirm").disabled=balance<total;
+ if(balance<total) $("qtyConfirm").title=`Не хватает ◆ ${money(total-balance)}`; else $("qtyConfirm").title="";
+}
+function closeQuantityModal(){window.pendingCase=null;$("caseQtyModal").classList.add("hidden")}
+function confirmQuantityOpen(){
+ const c=window.pendingCase,q=Number(window.pendingCaseQty||1); if(!c)return;
+ const total=c.price*q;
+ if(balance<total){toast("Нужно ещё ◆ "+money(total-balance));return}
+ closeQuantityModal();
+ balance-=total;
+ const wins=Array.from({length:q},()=>drop(c));
+ busy=true; save();
+ $("modal").classList.remove("hidden");
+ $("modalTitle").textContent=q===1?`ОТКРЫВАЕМ ${c.name}`:`ОТКРЫВАЕМ ${q} КЕЙСА — ${c.name}`;
+ $("modalText").textContent="Ленты разгоняются...";
+ $("modalBtn").classList.add("hidden");
+ buildCaseRoulette(c,wins);
+ setTimeout(()=>{
+   inv.push(...wins); busy=false; save(); renderInv();
+   $("modalTitle").textContent="🎉 ТВОИ ДРОПЫ!";
+   $("modalText").innerHTML=wins.map(w=>`<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:5px 0">${weaponVisual(w)} <b>${w.name}</b> <span>${w.rarity} · ◆ ${money(w.value)}</span></div>`).join("");
+   $("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
+ },3900);
 }
 
 function showUpgradeWheel(ch, ok){
@@ -244,19 +285,7 @@ function openCase(id){
  if(id==="promo"){openPromoModal();return}
  const c=CASES.find(x=>x.id===id);if(!c)return;
  if(balance<c.price){toast("Нужно ещё ◆ "+money(c.price-balance));return}
- balance-=c.price;
- const won=drop(c);busy=true;save();
- $("modal").classList.remove("hidden");
- $("modalTitle").textContent="ОТКРЫВАЕМ "+c.name;
- $("modalText").textContent="Лента разгоняется...";
- $("modalBtn").classList.add("hidden");
- buildCaseRoulette(c,won);
- setTimeout(()=>{
-  inv.push(won);busy=false;save();renderInv();
-  $("modalTitle").textContent="🎉 ТВОЙ ДРОП!";
-  $("modalText").innerHTML=`${weaponVisual(won)} <b>${won.name}</b><br>${won.rarity} · ◆ ${money(won.value)}`;
-  $("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
- },3900);
+ openQuantityModal(c);
 }
 function openPromoModal(){
  if(localStorage.getItem("backToSchool2026Used")==="1"){
@@ -412,6 +441,10 @@ $("upgradeModes").onclick=e=>{const b=e.target.closest(".modeBtn");if(!b)return;
 $("upgradeBtn").onclick=upgrade;
 $("modalBtn").onclick=()=>{if(!busy){$("modal").classList.add("hidden");hideAnimationLayers()}};
 $("retreatClose").onclick=()=>$("retreatModal").classList.add("hidden");
+document.querySelectorAll("#qtyChoices button").forEach(b=>b.onclick=()=>{window.pendingCaseQty=Number(b.dataset.qty);document.querySelectorAll("#qtyChoices button").forEach(x=>x.classList.remove("on"));b.classList.add("on");updateQuantityModal()});
+$("qtyConfirm").onclick=confirmQuantityOpen;
+$("qtyClose").onclick=closeQuantityModal;
+$("caseQtyModal").onclick=e=>{if(e.target.id==="caseQtyModal")closeQuantityModal()};
 $("promoSubmit").onclick=submitPromo;
 $("promoClose").onclick=closePromoModal;
 $("promoInput").addEventListener("keydown",e=>{if(e.key==="Enter")submitPromo()});

@@ -133,3 +133,17 @@
   pointer-events:none;
   box-shadow:inset 0 0 18px rgba(53,223,138,.18), 0 0 22px rgba(53,223,138,.12);
 }
+
+
+.qtyBox{text-align:center;max-width:430px!important}
+.qtyIcon{font-size:52px;margin-bottom:4px}
+.qtyChoices{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:18px 0 12px}
+.qtyChoices button{border:1px solid #343653;background:#15182a;color:#fff;border-radius:12px;padding:13px 6px;font-weight:900;font-size:16px;cursor:pointer}
+.qtyChoices button.on{border-color:#7568ff;background:#7568ff22;box-shadow:0 0 0 1px #7568ff55}
+.qtyTotal{font-weight:900;font-size:18px;margin:8px 0 16px}
+.qtyBox .promoClose{margin-top:8px}
+.multiRoulette{display:flex;flex-direction:column;gap:10px;width:100%}
+.multiRouletteRow{position:relative}
+.multiRouletteRow .roulettePointer{top:-2px}
+.multiRouletteRow .rouletteViewport{height:126px}
+@media(max-width:560px){.qtyChoices{gap:6px}.qtyChoices button{padding:11px 4px}.multiRoulette{gap:7px}.multiRouletteRow .rouletteViewport{height:112px}.multiRouletteRow .rouletteTrack{top:7px;height:98px}.multiRouletteRow .rouletteItem{height:98px}.multiRouletteRow .rouletteItem .riIcon{font-size:27px}}
