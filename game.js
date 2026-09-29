@@ -190,11 +190,21 @@ function buildCaseRoulette(c, won){
  track.style.transition="none";
  track.style.transform="translateX(0px)";
  requestAnimationFrame(()=>{
-   const itemW=130;
    const viewport=box.querySelector(".rouletteViewport");
-   const center=(viewport.clientWidth/2);
-   const targetCenter=targetIndex*itemW+60;
+   const firstCard=track.querySelector(".rouletteItem");
+   if(!viewport || !firstCard)return;
+
+   // Важно: на телефоне ширина карточки меньше, чем на ПК.
+   // Поэтому нельзя использовать фиксированные 130px — иначе стрелка
+   // может остановиться на одном предмете, а в инвентарь попадёт другой.
+   const cardWidth=firstCard.getBoundingClientRect().width;
+   const styles=getComputedStyle(track);
+   const gap=parseFloat(styles.columnGap || styles.gap || "0") || 0;
+   const step=cardWidth+gap;
+   const center=viewport.clientWidth/2;
+   const targetCenter=targetIndex*step+cardWidth/2;
    const end=center-targetCenter;
+
    track.style.transition="transform 3.7s cubic-bezier(.08,.72,.12,1)";
    track.style.transform=`translateX(${end}px)`;
  });
