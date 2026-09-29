@@ -235,6 +235,7 @@ function confirmQuantityOpen(){
  const total=c.price*q;
  if(balance<total){toast("Нужно ещё ◆ "+money(total-balance));return}
  closeQuantityModal();
+ const resultBox=document.querySelector("#modal .gameModalBox"); if(resultBox) resultBox.scrollTop=0;
  balance-=total;
  const wins=Array.from({length:q},()=>drop(c));
  busy=true; save();
@@ -244,7 +245,7 @@ function confirmQuantityOpen(){
  $("modalBtn").classList.add("hidden");
  buildCaseRoulette(c,wins);
  setTimeout(()=>{
-   inv.push(...wins); busy=false; save(); renderInv();
+   inv.push(...wins); busy=false; save(); renderInv(); scrollModalToTop();
    $("modalTitle").textContent="🎉 ТВОИ ДРОПЫ!";
    $("modalText").innerHTML=wins.map(w=>`<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:5px 0">${weaponVisual(w)} <b>${w.name}</b> <span>${w.rarity} · ◆ ${money(w.value)}</span></div>`).join("");
    $("modalBtn").textContent="ЗАБРАТЬ";$("modalBtn").classList.remove("hidden");
@@ -273,6 +274,10 @@ function showUpgradeWheel(ch, ok){
  });
 }
 
+function scrollModalToTop(){
+ const box=document.querySelector("#modal .gameModalBox");
+ if(box) box.scrollTop=0;
+}
 function hideAnimationLayers(){
  $("caseRoulette").classList.remove("active");
  $("upgradeWheel").classList.remove("active");
