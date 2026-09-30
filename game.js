@@ -105,6 +105,15 @@ const BACK_TO_SCHOOL_IMAGES={
  "golden graduation blade":"assets/skins/back_to_school/golden_graduation_blade.png"
 };
 
+// Отдельные картинки предметов FREE-кейса.
+const FREE_CASE_IMAGES={
+ "sticker box":"assets/skins/free_case/sticker_box.png",
+ "glock mini":"assets/skins/free_case/glock_mini.png",
+ "p250 mini":"assets/skins/free_case/p250_mini.png",
+ "knife token":"assets/skins/free_case/knife_token.png",
+ "awp toy":"assets/skins/free_case/awp_toy.png"
+};
+
 // Картинки самих кейсов. Каждому кейсу соответствует своя картинка.
 const CASE_IMAGES={
  backtoschool:"assets/cases/backtoschool.jpg",
@@ -126,6 +135,7 @@ function caseImage(id, cls="caseArtImg"){
 function weaponImagePath(name){
  const n=String(name||'').toLowerCase();
  if(BACK_TO_SCHOOL_IMAGES[n]) return BACK_TO_SCHOOL_IMAGES[n];
+ if(FREE_CASE_IMAGES[n]) return FREE_CASE_IMAGES[n];
  if(n === 'phoenix dragon') return WEAPON_IMAGES.phoenix;
  if(n.includes('blade')) return WEAPON_IMAGES.blade;
  if(n.includes('butterfly')) return WEAPON_IMAGES.butterfly;
