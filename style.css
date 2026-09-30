@@ -161,3 +161,11 @@
   .modalbox{margin:auto 0;}
   .gameModalBox{max-height:calc(100dvh - 20px)!important;padding:16px!important;}
 }
+
+/* Case artwork */
+.art{height:82px;display:flex;align-items:center;justify-content:center;padding:6px 8px;overflow:hidden}
+.caseArtImg{display:block;width:100%;height:100%;object-fit:contain;border-radius:12px}
+.promoChestBig{height:150px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.promoChestBig img{width:100%;height:100%;object-fit:contain;border-radius:18px}
+.qtyIcon{height:82px;margin-bottom:4px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.qtyCaseImg{width:120px;height:78px;object-fit:contain;border-radius:12px}

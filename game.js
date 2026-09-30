@@ -90,6 +90,25 @@ const WEAPON_IMAGES={
  phoenix:"assets/skins/phoenix.png",
  other:"assets/skins/other.png"
 };
+
+// Картинки самих кейсов. Каждому кейсу соответствует своя картинка.
+const CASE_IMAGES={
+ backtoschool:"assets/cases/backtoschool.jpg",
+ free:"assets/cases/free.jpg",
+ c1:"assets/cases/basic.jpg",
+ c2:"assets/cases/rare.jpg",
+ c3:"assets/cases/epic.jpg",
+ c4:"assets/cases/legendary.jpg",
+ c5:"assets/cases/premium.jpg",
+ c6:"assets/cases/ultra.jpg",
+ c7:"assets/cases/mythic.jpg",
+ c8:"assets/cases/legend.jpg",
+ c9:"assets/cases/dragonk.jpg"
+};
+function caseImage(id, cls="caseArtImg"){
+ const src=CASE_IMAGES[id];
+ return src ? `<img class="${cls}" src="${src}" alt="">` : "";
+}
 function weaponImagePath(name){
  const n=String(name||'').toLowerCase();
  if(n === 'phoenix dragon') return WEAPON_IMAGES.phoenix;
@@ -126,7 +145,7 @@ function renderCases(){
  const promoCard=`<article class="case">
   <button class="insideBtn" type="button" onclick="showRetreat('promo')">ЧТО ВНУТРИ</button>
   <span class="tag">BACK TO SCHOOL</span>
-  <div class="art">🎒</div>
+  <div class="art">${caseImage("backtoschool")}</div>
   <h3>BACK TO SCHOOL<span class="price">${promoUsed?"✓ ОТКРЫТ":"🔐 PROMO"}</span></h3>
   <p>${promoUsed?"Этот промо-кейс уже открыт":"10 предметов · нужен промокод"}</p>
   <div class="caseBtns"><button class="open" ${promoUsed?"disabled":""} onclick="openCase('promo')">${promoUsed?"УЖЕ ОТКРЫТ":"ОТКРЫТЬ"}</button></div>
@@ -135,7 +154,7 @@ function renderCases(){
   const values=c.items.map(x=>x[2]),min=Math.min(...values),max=Math.max(...values);
   return `<article class="case">
   <button class="insideBtn" type="button" onclick="showRetreat('${c.id}')">ЧТО ВНУТРИ</button>
-  <span class="tag">${c.name}</span><div class="art">${c.art}</div>
+  <span class="tag">${c.name}</span><div class="art">${caseImage(c.id)}</div>
   <h3>${c.name}<span class="price">◆ ${money(c.price)}</span></h3>
   <p>Дропы от ◆ ${money(min)} до ◆ ${money(max)}</p>
   <div class="caseBtns"><button class="open" onclick="openCase('${c.id}')">${c.price===0?"БЕСПЛАТНО":"ОТКРЫТЬ"}</button></div>
@@ -214,7 +233,7 @@ function buildCaseRoulette(c, wonList){
 function openQuantityModal(c){
  if(busy)return;
  window.pendingCase=c; window.pendingCaseQty=1;
- $("qtyCaseIcon").textContent=c.art||"📦";
+ $("qtyCaseIcon").innerHTML=caseImage(c.id,"qtyCaseImg");
  $("qtyTitle").textContent=`СКОЛЬКО КЕЙСОВ ОТКРЫТЬ?`;
  $("qtyPrice").textContent=`Цена за 1 кейс: ◆ ${money(c.price)}`;
  document.querySelectorAll("#qtyChoices button").forEach(b=>b.classList.toggle("on",b.dataset.qty==="1"));
