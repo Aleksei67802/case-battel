@@ -91,6 +91,20 @@ const WEAPON_IMAGES={
  other:"assets/skins/other.png"
 };
 
+// Отдельные картинки оружия из кейса BACK TO SCHOOL.
+const BACK_TO_SCHOOL_IMAGES={
+ "school blaster":"assets/skins/back_to_school/school_blaster.png",
+ "classroom pistol":"assets/skins/back_to_school/classroom_pistol.png",
+ "notebook smg":"assets/skins/back_to_school/notebook_smg.png",
+ "hallway hunter":"assets/skins/back_to_school/hallway_hunter.png",
+ "red marker rifle":"assets/skins/back_to_school/red_marker_rifle.png",
+ "golden pencil gun":"assets/skins/back_to_school/golden_pencil_gun.png",
+ "principal's deagle":"assets/skins/back_to_school/principal_s_deagle.png",
+ "backpack karambit":"assets/skins/back_to_school/backpack_karambit.png",
+ "homework destroyer":"assets/skins/back_to_school/homework_destroyer.png",
+ "golden graduation blade":"assets/skins/back_to_school/golden_graduation_blade.png"
+};
+
 // Картинки самих кейсов. Каждому кейсу соответствует своя картинка.
 const CASE_IMAGES={
  backtoschool:"assets/cases/backtoschool.jpg",
@@ -111,6 +125,7 @@ function caseImage(id, cls="caseArtImg"){
 }
 function weaponImagePath(name){
  const n=String(name||'').toLowerCase();
+ if(BACK_TO_SCHOOL_IMAGES[n]) return BACK_TO_SCHOOL_IMAGES[n];
  if(n === 'phoenix dragon') return WEAPON_IMAGES.phoenix;
  if(n.includes('blade')) return WEAPON_IMAGES.blade;
  if(n.includes('butterfly')) return WEAPON_IMAGES.butterfly;
