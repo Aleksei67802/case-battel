@@ -106,6 +106,15 @@ const BACK_TO_SCHOOL_IMAGES={
 };
 
 // Отдельные картинки предметов FREE-кейса.
+// Отдельные картинки оружия BASIC-кейса.
+const BASIC_CASE_IMAGES={
+ "rust knife":"assets/skins/basic_case/rust_knife.png",
+ "glock lime":"assets/skins/basic_case/glock_lime.png",
+ "usp carbon":"assets/skins/basic_case/usp_carbon.png",
+ "shadow knife":"assets/skins/basic_case/shadow_knife.png",
+ "butterfly gold":"assets/skins/basic_case/butterfly_gold.png"
+};
+
 const FREE_CASE_IMAGES={
  "sticker box":"assets/skins/free_case/sticker_box.png",
  "glock mini":"assets/skins/free_case/glock_mini.png",
@@ -135,6 +144,7 @@ function caseImage(id, cls="caseArtImg"){
 function weaponImagePath(name){
  const n=String(name||'').toLowerCase();
  if(BACK_TO_SCHOOL_IMAGES[n]) return BACK_TO_SCHOOL_IMAGES[n];
+ if(BASIC_CASE_IMAGES[n]) return BASIC_CASE_IMAGES[n];
  if(FREE_CASE_IMAGES[n]) return FREE_CASE_IMAGES[n];
  if(n === 'phoenix dragon') return WEAPON_IMAGES.phoenix;
  if(n.includes('blade')) return WEAPON_IMAGES.blade;
