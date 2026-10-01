@@ -1,3 +1,11 @@
+const RARE_CASE_IMAGES={
+ "p250 pulse":"assets/skins/rare_case/p250_pulse.png",
+ "mp7 neon":"assets/skins/rare_case/mp7_neon.png",
+ "m4a1 wave":"assets/skins/rare_case/m4a1_wave.png",
+ "karambit blue":"assets/skins/rare_case/karambit_blue.png",
+ "butterfly cyber":"assets/skins/rare_case/butterfly_cyber.png"
+};
+
 const PROMO_CODE="BACKTOSCHOOL2026";
 const PROMO_CASE={
  id:"backtoschool2026",name:"BACK TO SCHOOL",price:0,art:"🎒",
@@ -143,6 +151,7 @@ function caseImage(id, cls="caseArtImg"){
 }
 function weaponImagePath(name){
  const n=String(name||'').toLowerCase();
+ if(RARE_CASE_IMAGES[n]) return RARE_CASE_IMAGES[n];
  if(BACK_TO_SCHOOL_IMAGES[n]) return BACK_TO_SCHOOL_IMAGES[n];
  if(BASIC_CASE_IMAGES[n]) return BASIC_CASE_IMAGES[n];
  if(FREE_CASE_IMAGES[n]) return FREE_CASE_IMAGES[n];
