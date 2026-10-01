@@ -1,3 +1,16 @@
+const LEGEND_CASE_IMAGES={
+ "m4a4 royal":"assets/skins/legend_case/m4a4_royal.png",
+ "ak emperor":"assets/skins/legend_case/ak_emperor.png",
+ "awp monarch":"assets/skins/legend_case/awp_monarch.png",
+ "butterfly crown":"assets/skins/legend_case/butterfly_crown.png",
+ "karambit royal":"assets/skins/legend_case/karambit_royal.png",
+ "dragon awp gold":"assets/skins/legend_case/dragon_awp_gold.png",
+ "phoenix crown":"assets/skins/legend_case/phoenix_crown.png",
+ "talon imperial":"assets/skins/legend_case/talon_imperial.png",
+ "galaxy dragon":"assets/skins/legend_case/galaxy_dragon.png",
+ "emperor dragon knife":"assets/skins/legend_case/emperor_dragon_knife.png",
+};
+
 const DRAGON_K_CASE_IMAGES={
  "ak dragonfire":"assets/skins/dragon_k_case/ak_dragonfire.png",
  "awp red dragon":"assets/skins/dragon_k_case/awp_red_dragon.png",
@@ -174,6 +187,7 @@ function caseImage(id, cls="caseArtImg"){
 function weaponImagePath(name){
  const n=String(name||'').toLowerCase();
  if(RARE_CASE_IMAGES[n]) return RARE_CASE_IMAGES[n];
+ if(LEGEND_CASE_IMAGES[n]) return LEGEND_CASE_IMAGES[n];
  if(DRAGON_K_CASE_IMAGES[n]) return DRAGON_K_CASE_IMAGES[n];
  if(EPIC_CASE_IMAGES[n]) return EPIC_CASE_IMAGES[n];
  if(BACK_TO_SCHOOL_IMAGES[n]) return BACK_TO_SCHOOL_IMAGES[n];
