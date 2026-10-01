@@ -1,3 +1,12 @@
+const EPIC_CASE_IMAGES={
+ "fiveseven gold":"assets/skins/epic_case/five_seven_gold.png",
+ "five-seven gold":"assets/skins/epic_case/five_seven_gold.png",
+ "ak gold line":"assets/skins/epic_case/ak_gold_line.png",
+ "m4 gold":"assets/skins/epic_case/m4_gold.png",
+ "deagle royal":"assets/skins/epic_case/deagle_royal.png",
+ "karambit gold":"assets/skins/epic_case/karambit_gold.png"
+};
+
 const RARE_CASE_IMAGES={
  "p250 pulse":"assets/skins/rare_case/p250_pulse.png",
  "mp7 neon":"assets/skins/rare_case/mp7_neon.png",
@@ -152,6 +161,7 @@ function caseImage(id, cls="caseArtImg"){
 function weaponImagePath(name){
  const n=String(name||'').toLowerCase();
  if(RARE_CASE_IMAGES[n]) return RARE_CASE_IMAGES[n];
+ if(EPIC_CASE_IMAGES[n]) return EPIC_CASE_IMAGES[n];
  if(BACK_TO_SCHOOL_IMAGES[n]) return BACK_TO_SCHOOL_IMAGES[n];
  if(BASIC_CASE_IMAGES[n]) return BASIC_CASE_IMAGES[n];
  if(FREE_CASE_IMAGES[n]) return FREE_CASE_IMAGES[n];
